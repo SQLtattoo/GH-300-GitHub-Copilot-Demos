@@ -1,0 +1,13 @@
+# Testing dependencies
+# Install with: pip install -r requirements-test.txt
+
+# Test coverage
+coverage>=7.0.0
+
+# Test reporting
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# Optional: for more advanced testing
+pytest-mock>=3.10.0
+pytest-xdist>=3.0.0  # for parallel test execution
