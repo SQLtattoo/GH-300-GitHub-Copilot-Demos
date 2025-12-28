@@ -3,35 +3,46 @@
 A simple, reliable guide for choosing the right model inside **GitHub Copilot** (Chat, Inline, or Agents).
 ---
 
+### Disclaimer
+Model availability depends on your Copilot plan and org settings.
+
+---
 ```mermaid
 flowchart TB
-    Start["Start"] --> NeedFast["NeedFast"]
-    NeedFast -- Yes --> FastModels["FastModels"]
-    NeedFast -- No --> GeneralCoding["GeneralCoding"]
-    GeneralCoding -- No --> DeepReasoning["DeepReasoning"]
-    DeepReasoning -- Yes --> DeepModels["DeepModels"]
-    DeepReasoning -- No --> CodeFocus["CodeFocus"]
-    CodeFocus -- Yes --> CodeModels["CodeModels"]
-    CodeFocus -- No --> AgentWorkflows["AgentWorkflows"]
-    AgentWorkflows -- Yes --> AgentModels["AgentModels"]
-    AgentWorkflows -- No --> BalancedModels["BalancedModels"]
+    Start["Start"] --> NeedFast["Need speed & low cost?"]
+
+    NeedFast -- Yes --> FastModels["Fast models"]
+    NeedFast -- No --> GeneralCoding["Everyday coding task?"]
+
+    GeneralCoding -- Yes --> BalancedModels["Balanced models"]
+    GeneralCoding -- No --> DeepReasoning["Hard problem or deep reasoning?"]
+
+    DeepReasoning -- Yes --> DeepModels["Deep-reasoning models"]
+    DeepReasoning -- No --> CodeFocus["Large or strict code generation?"]
+
+    CodeFocus -- Yes --> CodeModels["Code-focused models"]
+    CodeFocus -- No --> AgentWorkflows["Using agents or tools?"]
+
+    AgentWorkflows -- Yes --> AgentModels["Agent-strong models"]
+    AgentWorkflows -- No --> BalancedModels
+
     FastModels --> Done["Done"]
     BalancedModels --> Done
     DeepModels --> Done
     CodeModels --> Done
     AgentModels --> Done
-    GeneralCoding -- Yes --> BalancedModels
 
-     FastModels:::Peach
-     DeepModels:::Sky
-     CodeModels:::Rose
-     AgentModels:::Aqua
-     BalancedModels:::Pine
-    classDef Peach stroke-width:1px, stroke-dasharray:none, stroke:#FBB35A, fill:#FFEFDB, color:#8F632D
-    classDef Rose stroke-width:1px, stroke-dasharray:none, stroke:#FF5978, fill:#FFDFE5, color:#8E2236
-    classDef Aqua stroke-width:1px, stroke-dasharray:none, stroke:#46EDC8, fill:#DEFFF8, color:#378E7A
-    classDef Sky stroke-width:1px, stroke-dasharray:none, stroke:#374D7C, fill:#E2EBFF, color:#374D7C
-    classDef Pine stroke-width:1px, stroke-dasharray:none, stroke:#254336, fill:#27654A, color:#FFFFFF
+    FastModels:::Peach
+    DeepModels:::Sky
+    CodeModels:::Rose
+    AgentModels:::Aqua
+    BalancedModels:::Pine
+
+    classDef Peach stroke-width:1px, stroke:#FBB35A, fill:#FFEFDB, color:#8F632D
+    classDef Rose stroke-width:1px, stroke:#FF5978, fill:#FFDFE5, color:#8E2236
+    classDef Aqua stroke-width:1px, stroke:#46EDC8, fill:#DEFFF8, color:#378E7A
+    classDef Sky stroke-width:1px, stroke:#374D7C, fill:#E2EBFF, color:#374D7C
+    classDef Pine stroke-width:1px, stroke:#254336, fill:#27654A, color:#FFFFFF
 ```
 ---
 
