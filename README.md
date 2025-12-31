@@ -4,6 +4,7 @@ A comprehensive, ready-to-use demonstration kit showcasing GitHub Copilot's capa
 
 ## 📋 Table of Contents
 - [Overview](#overview)
+- [Model Decision Tree](#choosing-the-right-copilot-model)
 - [Quick Start](#quick-start)
 - [What's Included](#whats-included)
 - [Demo Capabilities](#demo-capabilities)
@@ -26,11 +27,30 @@ This demo kit is designed for trainers, presenters, and teams who want to showca
 **Skill Level**: Beginner to Advanced  
 **Prerequisites**: Python 3.8+, VS Code, GitHub Copilot extension
 
+> ⚠️ **Note**: This repository intentionally contains bugs and insecure patterns 
+> (e.g., `eval`, path traversal) for demonstration purposes only.
+
+
+## 🧠 Choosing the Right Copilot Model
+
+GitHub Copilot supports multiple AI models, each optimized for different tasks 
+(speed, cost, deep reasoning, strict code generation, or agent workflows).
+
+To help you choose the right model **during the demo**, refer to the visual decision guide:
+
+👉 **[Copilot Model Decision Tree](./modelDecisionTree.md)**
+
+**Tip for presenters**:
+- Default to **Balanced models** for most demos
+- Switch to **Deep-Reasoning** models for architecture or complex bugs
+- Use **Code-Focused** models for large refactors or migrations
+- Use **Agent-Strong** models when demonstrating multi-file changes or Copilot Agents
+
 ## ⚡ Quick Start
 
 ```powershell
 # 1. Clone or download this repository
-cd "GitHub Copilot Demos Starter"
+cd "GH-300-GitHub-Copilot-Demos"
 
 # 2. Run the setup script
 .\setup_demo.ps1
@@ -45,6 +65,8 @@ That's it! The setup script will:
 - ✅ Configure VS Code settings
 - ✅ Verify the installation
 - ✅ Create quick reference guides
+
+> **💡 For Presenters**: The `main` branch has complete tests (227+). Use `.\reset_for_demo.ps1` before demos to showcase Copilot's test generation capabilities. Script backs up tests automatically and creates minimal stubs. After demos: `git checkout .` to restore.
 
 ## 📦 What's Included
 
@@ -347,6 +369,13 @@ powershell -ExecutionPolicy Bypass -File .\setup_demo.ps1
 - ✅ Ask audience for input on solutions
 - ✅ Pause for questions regularly
 - ✅ Emphasize real-world applicability
+
+💡 **Reset Tip**:  
+If you need to revert the project to its original broken state during a live demo:
+```bash
+git checkout .
+git clean -fd
+```
 
 ### Interactive Elements
 - Ask audience to suggest fixes
