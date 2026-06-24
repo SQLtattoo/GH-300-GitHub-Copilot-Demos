@@ -1,55 +1,41 @@
-"""
-Pytest configuration and shared fixtures.
-"""
+"""Starter pytest fixtures for the Budget Buddy demo app."""
 
-import pytest
 import sys
 from pathlib import Path
 
-# Add parent directory to path to import modules
+import pytest
+
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from calculator import Calculator
-from data_processor import DataProcessor
-from file_handler import FileHandler
-from data_table import DataTable, ColumnDefinition
+from calculator import BudgetCalculator
+from data_processor import TransactionProcessor
+from file_handler import BudgetFileHandler
+
+
+@pytest.fixture
+def sample_transactions():
+    """Return a small happy-path transaction set."""
+    return [
+        {"date": "2026-06-01", "merchant": "Payroll", "category": "Income", "amount": 5000.0, "type": "income"},
+        {"date": "2026-06-02", "merchant": "Grocery", "category": "Groceries", "amount": 120.0, "type": "expense"},
+        {"date": "2026-06-03", "merchant": "Transit", "category": "Transport", "amount": 40.0, "type": "expense"},
+    ]
 
 
 @pytest.fixture
 def calculator():
-    """Fixture providing a fresh Calculator instance for each test."""
-    return Calculator()
+    """Return a fresh calculator."""
+    return BudgetCalculator()
 
 
 @pytest.fixture
-def data_processor():
-    """Fixture providing a fresh DataProcessor instance for each test."""
-    return DataProcessor()
+def processor():
+    """Return a fresh transaction processor."""
+    return TransactionProcessor()
 
 
 @pytest.fixture
 def file_handler(tmp_path):
-    """Fixture providing a FileHandler instance with a temporary directory."""
-    return FileHandler(str(tmp_path))
-
-
-@pytest.fixture
-def sample_employees():
-    """Fixture providing sample employee data for DataTable tests."""
-    return [
-        {'name': 'Alice', 'department': 'Engineering', 'salary': 95000, 'age': 32},
-        {'name': 'Bob', 'department': 'Marketing', 'salary': 75000, 'age': 28},
-        {'name': 'Charlie', 'department': 'Engineering', 'salary': 105000, 'age': 35},
-        {'name': 'Diana', 'department': 'Sales', 'salary': 85000, 'age': 30},
-    ]
-
-
-@pytest.fixture
-def employee_columns():
-    """Fixture providing column definitions for employee data."""
-    return [
-        ColumnDefinition(key='name', label='Name'),
-        ColumnDefinition(key='department', label='Department'),
-        ColumnDefinition(key='salary', label='Salary'),
-        ColumnDefinition(key='age', label='Age'),
-    ]
+    """Return a file handler rooted at a temporary path."""
+    return BudgetFileHandler(str(tmp_path))

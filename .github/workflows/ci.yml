@@ -1,0 +1,29 @@
+# DEMO TODO (Module 3 - DevOps): this CI workflow is intentionally incomplete.
+# Use Copilot to finish the steps so the pipeline installs dependencies and runs pytest.
+#
+# Suggested goals for the live demo:
+#   - check out the repository
+#   - set up Python 3.13
+#   - install dependencies from requirements-test.txt
+#   - run pytest with coverage
+
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # TODO: set up Python 3.13 with actions/setup-python
+
+      # TODO: install dependencies from requirements-test.txt
+
+      # TODO: run pytest

@@ -1,428 +1,98 @@
-# 🚀 GitHub Copilot Demo Starter Kit
+# Budget Buddy - GitHub Copilot Demo Lab
 
-A comprehensive, ready-to-use demonstration kit showcasing GitHub Copilot's capabilities across code completion, bug detection, test generation, refactoring, security analysis, and more.
+Budget Buddy is a small Python budget tracker designed for Microsoft GH-300 demonstrations. It is intentionally a **working but immature** app: the happy path runs, starter tests pass, coverage is low, and realistic TODOs, bugs, security issues, and performance problems are left for GitHub Copilot to improve.
 
-## 📋 Table of Contents
-- [Overview](#overview)
-- [Model Decision Tree](#choosing-the-right-copilot-model)
-- [Quick Start](#quick-start)
-- [What's Included](#whats-included)
-- [Demo Capabilities](#demo-capabilities)
-- [Setup Instructions](#setup-instructions)
-- [Running the Demo](#running-the-demo)
-- [Project Structure](#project-structure)
-- [Troubleshooting](#troubleshooting)
+The goal is to show Copilot as more than autocomplete: codebase explanation, inline edits, agent mode, test generation, debugging, security review, refactoring, documentation, and PR-style summaries.
 
-## 🎯 Overview
+## Current Demo State
 
-This demo kit is designed for trainers, presenters, and teams who want to showcase GitHub Copilot's powerful AI-assisted development capabilities. It includes:
+- Runnable app: `python main.py`
+- Starter tests: 8 tests
+- Current coverage target: about 30%
+- Workshop goal: use Copilot to reach 90%+ coverage
+- Intentional issues: documented in [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md)
+- Trainer flow: documented in [DEMO_SCRIPT.md](DEMO_SCRIPT.md)
 
-- **3 Python modules** with intentional bugs, TODOs, and optimization opportunities
-- **Comprehensive test suite** demonstrating test generation capabilities
-- **Step-by-step trainer script** with interactive guidance
-- **Detailed demo guide** covering 10 key capability areas
-- **Automated setup** for consistent environment configuration
-
-**Duration**: 45-90 minutes (flexible)  
-**Skill Level**: Beginner to Advanced  
-**Prerequisites**: Python 3.8+, VS Code, GitHub Copilot extension
-
-> ⚠️ **Note**: This repository intentionally contains bugs and insecure patterns 
-> (e.g., `eval`, path traversal) for demonstration purposes only.
-
-
-## 🧠 Choosing the Right Copilot Model
-
-GitHub Copilot supports multiple AI models, each optimized for different tasks 
-(speed, cost, deep reasoning, strict code generation, or agent workflows).
-
-To help you choose the right model **during the demo**, refer to the visual decision guide:
-
-👉 **[Copilot Model Decision Tree](./modelDecisionTree.md)**
-
-**Tip for presenters**:
-- Default to **Balanced models** for most demos
-- Switch to **Deep-Reasoning** models for architecture or complex bugs
-- Use **Code-Focused** models for large refactors or migrations
-- Use **Agent-Strong** models when demonstrating multi-file changes or Copilot Agents
-
-## ⚡ Quick Start
+## Quick Start
 
 ```powershell
-# 1. Clone or download this repository
-cd "GH-300-GitHub-Copilot-Demos"
-
-# 2. Run the setup script
 .\setup_demo.ps1
-
-# 3. Open in VS Code
-code .
-```
-
-That's it! The setup script will:
-- ✅ Create and activate a virtual environment
-- ✅ Install all dependencies
-- ✅ Configure VS Code settings
-- ✅ Verify the installation
-- ✅ Create quick reference guides
-
-> **💡 For Presenters**: The `main` branch has complete tests (227+). Use `.\reset_for_demo.ps1` before demos to showcase Copilot's test generation capabilities. Script backs up tests automatically and creates minimal stubs. After demos: `git checkout .` to restore.
-
-## 📦 What's Included
-
-### Python Modules (with Intentional Issues)
-- **`calculator.py`** - Arithmetic operations with:
-  - Empty list bugs
-  - Duplicate constants
-  - Missing error handling
-  - Edge case issues
-  - Incomplete implementations (TODOs)
-
-- **`data_processor.py`** - Data operations with:
-  - O(n²) performance problems
-  - Security vulnerabilities (eval)
-  - Missing type hints
-  - Edge case bugs
-
-- **`file_handler.py`** - File I/O with:
-  - Path traversal vulnerabilities
-  - Missing error handling
-  - Encoding issues
-  - Incomplete implementations
-
-### Test Suite
-- **`test_calculator.py`** - 15 comprehensive test cases
-- **`test_data_processor.py`** - 17 test cases with edge cases
-- **`test_file_handler.py`** - 16 test cases including mocks
-- **`test_runner.py`** - Unified test runner
-
-### Demo Materials
-- **`setup_demo.ps1`** - Automated environment setup
-- **`QUICK_REFERENCE.md`** - Auto-generated cheat sheet
-- **`requirements-test.txt`** - Python dependencies
-
-## 🎪 Demo Capabilities
-
-### 1. **Code Completion & Generation** (15 min)
-- Function completion from comments
-- Multi-line code generation
-- Alternative suggestions
-- Context-aware implementations
-
-### 2. **Bug Detection & Fixing** (15 min)
-- Empty list handling
-- Edge case identification
-- Input validation
-- Defensive programming
-
-### 3. **Code Refactoring** (10 min)
-- Eliminate duplication
-- Performance optimization (O(n²) → O(n))
-- Design pattern improvements
-- Code smell detection
-
-### 4. **Test Generation** (15 min)
-- Automated test creation
-- Edge case coverage
-- Mock object generation
-- Test debugging
-
-### 5. **Documentation** (10 min)
-- Docstring generation
-- Parameter documentation
-- Usage examples
-- Behavior explanations
-
-### 6. **Security Analysis** (10 min)
-- Code injection detection (eval)
-- Path traversal vulnerabilities
-- Input validation gaps
-- Secure alternatives
-
-### 7. **Learning & Explanation** (5 min)
-- Code explanation
-- Pattern alternatives
-- Best practice suggestions
-
-## 🛠️ Setup Instructions
-
-### Prerequisites
-- **Python 3.8+** ([Download](https://www.python.org/downloads/))
-- **VS Code** ([Download](https://code.visualstudio.com/))
-- **GitHub Copilot extension** ([Install](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot))
-- **PowerShell** (included with Windows)
-
-### Automated Setup
-```powershell
-# Basic setup
-.\setup_demo.ps1
-
-# Skip test verification (faster)
-.\setup_demo.ps1 -SkipTests
-
-# Force recreate environment
-.\setup_demo.ps1 -Force
-```
-
-### Manual Setup (if needed)
-```powershell
-# Create virtual environment
-python -m venv .venv
-
-# Activate it
 .\.venv\Scripts\Activate.ps1
-
-# Install dependencies
-pip install -r requirements-test.txt
-
-# Verify installation
-python test_runner.py
-```
-
-## 🎬 Running the Demo
-
-### Using the Test Suite
-```powershell
+python main.py
 pytest
 ```
 
-This provides:
-- ✅ 227 comprehensive test cases
-- ✅ 93% code coverage
-- ✅ Security vulnerability tests
-- ✅ Performance validation
-- ✅ HTML coverage reports
-
-### Manual Exploration
-1. Review the improved codebase
-2. Check `TRANSFORMATION_GUIDE.md` for the full journey
-3. Run tests to verify everything works
-4. Review `CHANGELOG.md` for all changes
-
-### Custom Demo
-Pick and choose sections based on:
-- Time available
-- Audience skill level
-- Specific interests (security, testing, performance)
-
-## 📁 Project Structure
-
-```
-GitHub Copilot Demos Starter/
-├── calculator.py              # Module 1: Arithmetic operations
-├── data_processor.py          # Module 2: Data operations
-├── file_handler.py            # Module 3: File I/O
-├── data_table.py              # Module 4: Table component
-├── logger.py                  # Centralized logging
-├── main.py                    # Entry point
-│
-├── tests/                     # Test suite (227 tests)
-│   ├── test_calculator.py     # Calculator tests (80+)
-│   ├── test_data_processor.py # Data processor tests (60+)
-│   ├── test_file_handler.py   # File handler tests (50+)
-│   ├── test_data_table.py     # Data table tests (70+)
-│   ├── test_logger.py         # Logger tests (40+)
-│   └── conftest.py            # Shared fixtures
-│
-├── setup_demo.ps1             # Automated setup script
-├── pytest.ini                 # Test configuration
-├── TRANSFORMATION_GUIDE.md    # Complete improvement journey
-├── CHANGELOG.md               # All changes documented
-├── QUICK_REFERENCE.md         # Quick commands reference
-├── README.md                  # This file
-├── requirements-test.txt      # Python dependencies
-│
-├── .venv/                     # Virtual environment (created by setup)
-├── .vscode/                   # VS Code settings (created by setup)
-│   └── settings.json          # Python & testing configuration
-│
-└── __pycache__/               # Python cache (auto-generated)
-```
-
-## 🧪 Testing Commands
+If PowerShell blocks script execution, run:
 
 ```powershell
-# Run all tests
-python test_runner.py
-
-# Run specific test file
-python -m pytest test_calculator.py -v
-
-# Run specific test class
-python -m pytest test_calculator.py::TestCalculator -v
-
-# Run specific test method
-python -m pytest test_calculator.py::TestCalculator::test_average -v
-
-# Run with coverage
-pytest --cov=. --cov-report=html
-
-# View coverage report
-start htmlcov/index.html
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
 
-## 🎯 Key Demo Locations
+## What The App Does
 
-### Bugs to Fix
-| File | Line | Issue | Demo Type |
-|------|------|-------|-----------|
-| calculator.py | ~62 | Empty list in average() | Bug Detection |
-| calculator.py | ~68-75 | Duplicate PI constant | Refactoring |
-| calculator.py | ~80 | Missing error handling | Code Quality |
-| calculator.py | ~96 | No empty check | Edge Cases |
-| data_processor.py | ~41 | O(n²) performance | Optimization |
-| data_processor.py | ~57 | eval() security risk | Security |
-| file_handler.py | ~49 | Path traversal | Security |
+Budget Buddy reads sample transactions from [data/sample_transactions.csv](data/sample_transactions.csv), builds a simple monthly budget report, and logs:
 
-### TODOs to Complete
-| File | Line | Task | Demo Type |
-|------|------|------|-----------|
-| calculator.py | ~27 | Implement multiply() | Code Completion |
-| calculator.py | ~30 | Implement divide() | Code Completion |
-| calculator.py | ~46 | Implement square_root() | Code Generation |
-| calculator.py | ~81 | Implement factorial() | Code Generation |
-| data_processor.py | ~19 | is_palindrome() | Code Completion |
-| file_handler.py | ~32 | write_text_file() | Code Completion |
+- income
+- expenses
+- remaining budget
+- net cash flow
+- savings rate
+- largest expense
+- spending by category
+- a paginated transaction table
 
-## 💡 Copilot Commands Reference
+## Main Files
 
-### Editor Shortcuts
-- **Accept**: `Tab`
-- **Alternatives**: `Ctrl + Enter`
-- **Next/Previous**: `Alt + ]` / `Alt + [`
-- **Inline Chat**: `Ctrl + I`
-- **Dismiss**: `Esc`
+| File | Purpose |
+| --- | --- |
+| [main.py](main.py) | Runnable demo app and report orchestration |
+| [calculator.py](calculator.py) | Budget calculations with intentional edge-case bugs |
+| [data_processor.py](data_processor.py) | Transaction filtering, grouping, duplicate detection, and TODOs |
+| [file_handler.py](file_handler.py) | CSV/JSON file I/O with an intentional path traversal gap |
+| [data_table.py](data_table.py) | Generic table helper used by the app |
+| [logger.py](logger.py) | Centralized logging utility |
+| [tests](tests) | Sparse starter tests for the coverage journey |
 
-### Chat Commands
-- `/explain` - Explain selected code
-- `/fix` - Fix problems
-- `/tests` - Generate tests
-- `/doc` - Add documentation
-- `/optimize` - Improve performance
+## Demo Flow (GH-300 modules)
 
-### Copilot Chat
-- Right-click → "Copilot" menu
-- Or open from sidebar (Ctrl + Shift + I)
+The trainer flow in [DEMO_SCRIPT.md](DEMO_SCRIPT.md) is aligned to the five
+course modules:
 
-## 🔧 Troubleshooting
+1. **Module 1 — Introduction:** run `setup_demo.ps1` and `python main.py` to frame the use case.
+2. **Module 2 — Exploring Features:** Chat, Inline Chat, CLI, and prompts with context (security review of file handling).
+3. **Module 3 — Developer Use Cases:** generate, transform, optimize, document, and a DevOps beat (Dockerfile + CI).
+4. **Module 4 — Building Unit Tests:** the coverage journey from ~30% to 90%+.
+5. **Module 5 — Advanced Capabilities:** Agent Mode, `AGENT.md`, Skills, MCP, and PR review/summary.
 
-### Copilot Not Suggesting?
-1. Check status bar - Copilot icon should be visible
-2. Verify extension is enabled
-3. Try `Ctrl + Enter` to force suggestions
-4. Check GitHub Copilot subscription is active
+## Useful Copilot Prompts
 
-### Virtual Environment Issues?
+Reusable prompts live in [.github/prompts](.github/prompts):
+
+- `generate-tests.prompt.md`
+- `security-review.prompt.md`
+- `refactor-performance.prompt.md`
+- `agent-feature.prompt.md`
+- `devops-snippet.prompt.md`
+- `pr-summary.prompt.md`
+
+## Agent Customization Assets
+
+Module 5 showcases how Copilot follows project-level guidance:
+
+- [AGENT.md](AGENT.md) — operating manual for agents in this repo.
+- [.github/copilot-instructions.md](.github/copilot-instructions.md) — repo-wide rules.
+- [.github/skills](.github/skills) — task playbooks (`SKILL.md`), e.g. adding a budget report section.
+
+## Validation Commands
+
 ```powershell
-# Recreate environment
-.\setup_demo.ps1 -Force
-
-# Manual activation
-.\.venv\Scripts\Activate.ps1
-
-# Verify activation
-python -c "import sys; print(sys.prefix)"
+python main.py
+pytest
+pytest --cov=. --cov-report=term-missing
 ```
 
-### Tests Failing?
-```powershell
-# Reinstall dependencies
-pip install -r requirements-test.txt --force-reinstall
+During the demo, after Copilot generates enough tests and fixes, change the coverage threshold in [pytest.ini](pytest.ini) from `30` to `90` and rerun `pytest`.
 
-# Check Python version
-python --version  # Should be 3.8+
+## Trainer Notes
 
-# Run with verbose output
-python -m pytest -vv
-```
-
-### Import Errors?
-```powershell
-# Ensure virtual environment is activated
-.\.venv\Scripts\Activate.ps1
-
-# Verify modules exist
-python -c "import calculator; import data_processor; import file_handler"
-```
-
-### PowerShell Execution Policy?
-```powershell
-# If scripts won't run
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-
-# Or run with bypass
-powershell -ExecutionPolicy Bypass -File .\setup_demo.ps1
-```
-
-## 🎓 Tips for Presenters
-
-### Before the Demo
-- [ ] Run `setup_demo.ps1` and verify everything works
-- [ ] Review `QUICK_REFERENCE.md` 
-- [ ] Test Copilot connection
-- [ ] Adjust timing based on audience
-- [ ] Prepare backup examples
-
-### During the Demo
-- ✅ Start with simple examples, progress to complex
-- ✅ Show both successes and limitations
-- ✅ Ask audience for input on solutions
-- ✅ Pause for questions regularly
-- ✅ Emphasize real-world applicability
-
-💡 **Reset Tip**:  
-If you need to revert the project to its original broken state during a live demo:
-```bash
-git checkout .
-git clean -fd
-```
-
-### Interactive Elements
-- Ask audience to suggest fixes
-- Show multiple Copilot alternatives
-- Demonstrate live debugging
-- Compare manual vs AI-assisted coding time
-
-## 📊 Learning Outcomes
-
-After completing this demo, participants will understand:
-
-1. **How to use Copilot effectively** for daily development
-2. **When to trust vs verify** AI suggestions
-3. **Best practices** for prompting Copilot
-4. **Security implications** of AI-generated code
-5. **Testing strategies** with AI assistance
-6. **Code quality improvements** through AI
-7. **Documentation automation** capabilities
-8. **Learning opportunities** from AI explanations
-
-## 🤝 Contributing
-
-Found a bug? Have a suggestion? Want to add more demo scenarios?
-
-1. File an issue describing the problem/enhancement
-2. Fork the repository
-3. Make your changes
-4. Submit a pull request
-
-## 📄 License
-
-This demo kit is provided as-is for educational purposes. Feel free to use, modify, and distribute for training and demonstration purposes.
-
-## 🙏 Acknowledgments
-
-Created for demonstrating GitHub Copilot capabilities in professional development environments.
-
----
-
-## 📞 Support
-
-For questions or issues:
-1. Check `TROUBLESHOOTING` section above
-2. Consult `QUICK_REFERENCE.md` for commands
-
----
-
-**Ready to showcase GitHub Copilot?** 🚀
-
-Run `.\setup_demo.ps1` to get started!
+This repository is intentionally not production-ready. Do not remove the TODOs and bugs from the starter state unless you also update [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md) and [DEMO_SCRIPT.md](DEMO_SCRIPT.md).

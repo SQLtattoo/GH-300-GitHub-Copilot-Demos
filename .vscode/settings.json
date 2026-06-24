@@ -1,0 +1,6 @@
+{
+    // Always open classic editor Inline Chat with Ctrl+I, even when a file
+    // is part of an active chat session. Without this, Ctrl+I shows
+    // "Ask in Chat" instead of "Open Inline Chat".
+    "inlineChat.askInChat": false
+}

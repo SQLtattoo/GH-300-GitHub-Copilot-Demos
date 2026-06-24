@@ -24,9 +24,11 @@ wheels/
 venv/
 env/
 ENV/
-
+.venv/
+.venv/
 # IDE
-.vscode/
+.vscode/*
+!.vscode/settings.json
 .idea/
 *.swp
 *.swo

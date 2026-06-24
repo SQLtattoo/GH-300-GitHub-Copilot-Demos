@@ -1,54 +1,29 @@
-# GitHub Copilot – Project Guidelines
+# GitHub Copilot Project Instructions
 
-## ✅ Coding Style
-- Follow the project’s linting rules (`.eslintrc.json` for JS/TS, `.pylintrc` for Python).
-- Use **single quotes** for strings in JS/TS.
-- Always terminate statements with `;` in JS/TS.
-- Prefer `const` and `let` over `var`.
+This repository is a GH-300 demo lab for a small Python budget tracker named Budget Buddy.
 
-## ✅ Security Practices
-- Never hardcode secrets or credentials.
-- Validate all external input using `utils/validators`.
-- For cookies:
-  - `httpOnly: true`
-  - `secure: true`
-  - `sameSite: 'strict'`
-  - Set `maxAge` appropriately.
-- Use parameterized queries for database access.
+## Demo Intent
+- The starter state is intentionally incomplete.
+- Keep the app runnable on the happy path.
+- Keep starter coverage around 30% until the trainer begins the coverage demo.
+- The workshop goal is to use Copilot to reach 90%+ coverage.
+- Bugs, TODOs, security gaps, and performance issues are teaching material.
 
-## ✅ Testing Requirements
-- Generate unit tests for all new code.
-- Use **Jest** for JS/TS and **pytest** for Python.
-- Minimum coverage: **90%**.
-- Include edge cases and error handling in tests.
+## Coding Guidelines
+- Use Python type hints for public functions.
+- Use clear `ValueError` messages for invalid user data.
+- Use `logger` from [logger.py](logger.py) instead of `print()` in app code.
+- Keep changes small and focused.
+- Prefer standard library features over extra dependencies.
 
-## ✅ Python Environment
-- **Always activate the virtual environment before installing packages or executing code:**
-  - Windows: `.\.venv\Scripts\Activate.ps1`
-  - Linux/Mac: `source .venv/bin/activate`
-- Install dependencies: `pip install -r requirements-test.txt`
-- Run tests: `pytest`
+## Testing Guidelines
+- Use pytest.
+- Add tests with fixtures where useful.
+- Include happy-path, edge-case, and error-path tests.
+- Add security tests for path traversal fixes.
+- When the trainer requests the final state, raise coverage to 90%+.
 
-## ✅ Internal Libraries & APIs
-- Use `logger` for logging instead of `console.log`.
-- Use `fetchWithAuth` for authenticated API calls.
-- Avoid direct calls to external APIs without wrappers.
-
-## ✅ Documentation
-- Document all public functions with JSDoc (JS/TS) or docstrings (Python).
-- Include usage examples for complex functions.
-- Update README when adding new features.
-
-## ✅ Performance & Quality
-- Optimize loops and avoid unnecessary nested iterations.
-- Use async/await for asynchronous operations.
-- Ensure code passes CI/CD checks before merging.
-
-## ✅ Every time you make a change update the CHANGELOG.md file
-- Follow the format in the existing CHANGELOG.md file.
-
----
-
-### Notes for Copilot:
-- Apply these rules when generating code, tests, or documentation.
-- Suggest fixes if existing code violates these guidelines.
+## Documentation Guidelines
+- Update [CHANGELOG.md](CHANGELOG.md) for meaningful changes.
+- Update [README.md](README.md) when behavior or commands change.
+- Keep [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md) accurate if adding or removing demo issues.

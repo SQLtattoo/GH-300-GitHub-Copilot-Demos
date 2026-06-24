@@ -1,0 +1,519 @@
+# GH-300 Budget Buddy Demo Script
+
+This script is aligned to the five modules of the official GH-300 course. Each
+module below maps a learning objective to a live Budget Buddy demo you can run.
+Pick the depth that fits your time slot (45-90 minutes).
+
+## Module Map
+
+| Module | Theme | Budget Buddy demo | Key assets |
+| --- | --- | --- | --- |
+| 1 | Introduction to GitHub Copilot | Set up, run the app, frame the use case | `setup_demo.ps1`, `main.py` |
+| 2 | Exploring Copilot's Features | Chat, Inline Chat, CLI, prompts with context | `calculator.py`, `.github/prompts` |
+| 3 | Developer Use Cases | Generate, transform, optimize, document, DevOps | `data_processor.py`, `Dockerfile`, CI |
+| 4 | Building Unit Tests | The coverage journey from ~30% to 90%+ | `tests`, `pytest.ini` |
+| 5 | Advanced Capabilities | Agent Mode, AGENT.md, SKILLs, MCP, PR review | `AGENT.md`, agent + PR prompts |
+
+> Python note for Module 4: the course slides use C# / xUnit / a BankAccount
+> sample. This repo is Python / pytest. Map the concepts directly: Test Explorer
+> ≈ pytest output, `[Fact]` ≈ a `test_` function, and `@workspace /tests` works
+> the same way.
+
+---
+
+## Before You Begin — Work on a Branch
+
+Create a feature branch off `main` before the demo. Everything you build across
+Modules 2-5 lands on this branch, which keeps `main` clean for re-runs and sets up
+the Module 5e pull request naturally.
+
+```powershell
+git switch -c demo/budget-buddy-walkthrough
+```
+
+Talking points:
+
+- All Module 2-5 edits accumulate here as one coherent changeset.
+- At the end (Module 5e) you open a PR from this branch and let Copilot review it.
+- To reset between sessions, just discard the branch and recreate it:
+
+```powershell
+git switch main
+git branch -D demo/budget-buddy-walkthrough
+```
+
+> Presenter note: if you prefer, commit after each module so the PR diff tells a
+> clean story. The `reset_for_demo.ps1` script restores the starter state if you
+> need a full reset.
+
+---
+
+## Module 1 — Introduction to GitHub Copilot
+
+Goal: set context. Show that this is a real, working app, not isolated snippets,
+and that Copilot uses workspace context and repo instructions.
+
+Run:
+
+```powershell
+.\setup_demo.ps1
+python main.py
+```
+
+Talking points:
+
+- What Copilot is and the value proposition (less boilerplate, faster onboarding).
+- Responsible AI: suggestions are assistive; the developer stays accountable.
+- Point at `.github/copilot-instructions.md` to show repo-level guidance.
+
+### 1a. Settings worth showing
+
+Open Settings with `Ctrl+,` and type `copilot` to reveal the whole surface, then
+call out a few that matter. Switch to "Preferences: Open Settings (JSON)" to make
+the point that everything is just text and that workspace settings (this repo's
+`.vscode/settings.json`) ship with the code.
+
+| Setting | Why it matters in the demo |
+| --- | --- |
+| `github.copilot.enable` | Per-language on/off — show disabling Copilot in secrets/`.env` files. |
+| `editor.inlineSuggest.enabled` | Master switch for ghost-text completions. |
+| `github.copilot.nextEditSuggestions.enabled` | The newer "predict my next edit" feature. |
+| `chat.agent.enabled` | Turns on Agent mode (the star of Module 5). |
+| `chat.tools.autoApprove` | Auto-run tools without confirmation — good trust/safety talking point. |
+| `chat.mcp.enabled` | Enables Model Context Protocol servers (Module 5). |
+| `github.copilot.chat.codeGeneration.useInstructionFiles` | Makes Copilot honor `.github/copilot-instructions.md`. |
+| `chat.promptFiles` | Enables reusable `.prompt.md` files in `.github/prompts`. |
+| `telemetry.telemetryLevel` | Privacy/enterprise trust — what data is sent. |
+
+> This repo preconfigures `inlineChat.askInChat: false` in `.vscode/settings.json`
+> so `Ctrl+I` reliably opens classic Inline Chat for the Module 2 demo.
+
+### 1b. Chat modes and custom agents
+
+When you open the Copilot Chat input box you see a mode picker with three options.
+These ship with the GitHub Copilot extension in VS Code (`v1.99+`) and are
+available to **everyone**:
+
+| Mode | What it does |
+| --- | --- |
+| **Ask** | Default. Answers questions in chat; never edits files or runs commands autonomously. |
+| **Plan** | Produces a step-by-step plan for review *before* executing — ideal for showing learners what an agentic workflow looks like without surprise edits. |
+| **Agent** | Full agentic mode: reads files, edits multiple files, runs terminal commands, and iterates in one turn. The star of Module 5. |
+
+Below the modes you may see a list of **custom agents** (e.g. *AIAgentExpert*,
+*Azure IaC Exporter*, *AzureCostOptimizeAgent*, and others). These are **not**
+part of the standard Copilot product — they are agents configured in your
+personal VS Code environment, typically installed by internal Microsoft tooling
+(AI Toolkit / Foundry Toolkit extension or `.agent.md` config files). External
+customers will not have them unless they build their own.
+
+The **ability** to create custom agents *is* available to everyone via
+`Configure Custom Agents...`. The specific Azure-centric ones shown here are
+MS-internal.
+
+> Presenter note: when demoing to customers, show the `Configure Custom Agents…`
+> option as proof that teams can author domain-specific agents for their own
+> stack. Do not demo the MS-internal Azure agents unless your audience has the
+> same tooling configured.
+
+No code changes in this module.
+
+---
+
+## Module 2 — Exploring Copilot's Features
+
+Goal: demonstrate the core surfaces — Copilot Chat, Inline Chat, the CLI, and
+prompt engineering with added context.
+
+### 2a. Explain the workspace (Chat)
+
+```text
+Explain this repository. What does the app do, what are the main files, and where should I start reading?
+```
+
+### 2b. Inline Chat on a function
+
+Open [calculator.py](calculator.py), select `savings_rate()`, and use Inline Chat:
+
+```text
+Explain what this method does and what happens when income is zero.
+```
+
+This naturally surfaces a real bug to revisit in Module 4.
+
+> Presenter note: the code no longer carries `# BUG` spoiler comments. The
+> zero-income bug is documented in
+> [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md#L11) (Savings rate row).
+
+### 2c. Copilot in the terminal
+
+There are two different "terminal" surfaces. Show both so the distinction is clear.
+
+**1) `@terminal` chat participant (inside VS Code).** Type this in the Copilot
+**Chat** panel — not the shell. It specializes in shell/terminal questions and
+gives a one-click Run button:
+
+```text
+@terminal How do I run the tests with coverage in this repo?
+```
+
+**2) GitHub Copilot CLI (standalone `copilot` in your shell).** This is a separate
+agentic tool you launch from PowerShell. Start an interactive session:
+
+```powershell
+copilot
+```
+
+Then ask, in natural language, inside the Copilot CLI prompt:
+
+```text
+How do I run this app and its tests with coverage?
+```
+
+```text
+Add a .gitignore entry for the htmlcov coverage folder and explain why.
+```
+
+You can also run a one-shot prompt without entering the session:
+
+```powershell
+copilot -p "Explain what main.py does in two sentences."
+```
+
+Talking points:
+
+- `@terminal` lives in the editor's Chat; the `copilot` CLI lives in the terminal
+  and can read files and run commands with your approval.
+- Both honor repo context, so answers are tailored to Budget Buddy (pytest, the
+  `.venv`, the coverage gate) rather than generic.
+
+### 2d. Prompts and providing context (security example)
+
+The course shows a "review this banking app for security" prompt. The Budget
+Buddy equivalent is the path-traversal gap in file handling. Use
+[.github/prompts/security-review.prompt.md](.github/prompts/security-review.prompt.md):
+
+```text
+Review file_handler.py for path traversal and unsafe file handling. Ex
+plain the risk before changing code.
+```
+
+Emphasize how a focused prompt plus repo context produces a better answer than a
+vague one.
+
+> Presenter note: the path-traversal gap is in `read_transactions_json`, logged
+> in [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md#L13) (Security row).
+
+---
+
+## Module 3 — Developer Use Cases
+
+Goal: walk the generate / transform / optimize / document / explain loop, plus a
+DevOps beat.
+
+### 3a. Generate code from a TODO
+
+Open [calculator.py](calculator.py) and implement `forecast_month_end_spend()` or
+`is_over_budget()` from the TODO stubs.
+
+### 3b. Transform / refactor
+
+```text
+Transform group_expenses_by_category in data_processor.py into a single-pass aggregation.
+```
+
+### 3c. Optimize (performance)
+
+Use [.github/prompts/refactor-performance.prompt.md](.github/prompts/refactor-performance.prompt.md):
+
+```text
+Refactor duplicate detection in data_processor.py to avoid O(n^2) behavior while preserving output.
+```
+
+> Presenter note: the O(n^2) hotspot is in `find_duplicate_transactions`,
+> tracked in [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md#L21) (Performance row).
+
+### 3d. Document and explain
+
+```text
+Add concise docstrings and type hints to the public methods in calculator.py.
+```
+
+### 3e. DevOps snippets
+
+Use [.github/prompts/devops-snippet.prompt.md](.github/prompts/devops-snippet.prompt.md).
+The repo ships a `Dockerfile` and a CI workflow with intentional TODOs:
+
+```text
+Complete the Dockerfile to run Budget Buddy, then finish the GitHub Actions workflow to install deps and run pytest.
+```
+
+---
+
+## Module 4 — Building Unit Tests
+
+Goal: the headline demo. Drive coverage from the ~30% starter baseline to 90%+.
+
+### 4a. Show the starting point
+
+```powershell
+pytest
+```
+
+Expected: starter tests pass, coverage around 30%.
+
+### 4b. Generate tests
+
+Use [.github/prompts/generate-tests.prompt.md](.github/prompts/generate-tests.prompt.md):
+
+```text
+Generate focused pytest tests for BudgetCalculator edge cases, including empty transactions, zero income, zero expenses, and history behavior.
+```
+
+You can also use `@workspace /tests` on a selected function.
+
+> Presenter note: the calculator edge-case bugs (empty expenses, category
+> percentage, savings rate) are listed in
+> [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md#L9) (rows 9-11). Input
+> validation lives at
+> [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md#L12).
+
+### 4c. Run, verify, and fix (red-green loop)
+
+```text
+Use the pytest failure output to identify the root cause. Fix the smallest relevant code path and rerun the tests.
+```
+
+### 4d. Push past 90% and raise the gate
+
+After enough tests pass, raise the bar in [pytest.ini](pytest.ini) from
+`--cov-fail-under=30` to `--cov-fail-under=90` (and `fail_under = 90`), then:
+
+```powershell
+pytest
+```
+
+---
+
+## Module 5 — Advanced Capabilities
+
+Goal: show Copilot beyond the editor — Agent Mode, custom instructions, Skills,
+MCP, and the GitHub review workflow.
+
+### 5a. Agent Mode multi-file feature
+
+Use [.github/prompts/agent-feature.prompt.md](.github/prompts/agent-feature.prompt.md):
+
+```text
+Add CSV export support for transactions. Update file_handler.py, add tests, update README and CHANGELOG, and run pytest.
+```
+
+Watch Copilot plan, edit several files, run tests, and report back.
+
+### 5b. Custom instructions and AGENT.md
+
+Open [AGENT.md](AGENT.md) and [.github/copilot-instructions.md](.github/copilot-instructions.md).
+
+Narration:
+
+> "Copilot reads project files that describe *how we work*. `copilot-instructions.md`
+> sets repo-wide rules, and `AGENT.md` gives an agent its operating manual for this
+> repo — build and test commands, conventions, and guardrails. Because these live
+> in the repo, every teammate and every Copilot session follows the same playbook."
+
+### 5c. Skills (SKILL.md)
+
+Open [.github/skills/add-budget-report-section/SKILL.md](.github/skills/add-budget-report-section/SKILL.md)
+and show its structure.
+
+Narration:
+
+> "Skills are reusable, model-invoked playbooks. A `SKILL.md` packages domain
+> knowledge and step-by-step instructions for a specific task — here, 'add a new
+> budget report section' — with a name and description Copilot matches against
+> your request. Unlike a one-off prompt, a Skill is discoverable and shareable:
+> drop it in the repo and Copilot pulls in the full instructions only when the
+> task is relevant, so the right expertise shows up automatically without bloating
+> every prompt. Think of instructions as *always-on rules*, prompts as *something
+> you trigger*, and Skills as *expertise Copilot reaches for on demand*."
+
+Optional live beat:
+
+```text
+Add a new "top merchants" section to the budget report.
+```
+
+Let Copilot discover and follow the Skill.
+
+A Skill can also bundle scripts. Open
+[.github/skills/run-coverage/SKILL.md](.github/skills/run-coverage/SKILL.md),
+which ships `run-coverage.sh` and `run-coverage.ps1` alongside its instructions:
+
+```text
+Run the test coverage report.
+```
+
+Copilot matches the `run-coverage` skill and runs the bundled script (asking for
+confirmation first, since `shell` is not pre-approved). Mention that
+`allowed-tools: shell` would skip that prompt in a trusted repo.
+
+### 5d. MCP servers
+
+Talking point: MCP lets Copilot reach external tools and data (issues, databases,
+docs) through a standard protocol. Mention the configured MCP servers available in
+this environment as an example of extending Copilot's reach.
+
+### 5e. Coding Agent and PR review
+
+This is the closing "ship it" story: take the changes you just made with Copilot,
+open a pull request, and let **Copilot review its own PR on github.com**.
+
+**1) Create the PR from VS Code.** With your branch's changes committed, ask
+Copilot to draft and open the PR from the `demo/budget-buddy-walkthrough` branch
+you created in [Before You Begin](#before-you-begin--work-on-a-branch) (the GitHub
+Pull Requests extension exposes this as a tool/skill):
+
+```text
+Create a pull request for my current branch. Write a title and description summarizing the changes, the tests run, and any risks.
+```
+
+Copilot reads the diff (`#changes`), drafts the title/body, and opens the PR. You
+can also draft the body first with
+[.github/prompts/pr-summary.prompt.md](.github/prompts/pr-summary.prompt.md):
+
+```text
+Summarize the current diff as a pull request description with test results and risk notes.
+```
+
+**2) Show the Copilot review on github.com.** Open the PR in the browser and add
+**Copilot** as a reviewer (Reviewers → *Copilot*), or it may review
+automatically if the repo has that rule enabled. Walk the audience through:
+
+- the **PR summary** Copilot generates at the top of the page,
+- the **inline review comments** Copilot leaves on specific lines (style, bugs,
+  edge cases, suggested changes),
+- accepting a **suggested change** with one click, and re-requesting review.
+
+**3) Optional — Coding Agent end to end.** Assign a GitHub issue to **Copilot**
+and let the coding agent open a PR by itself, then circle back to the review flow
+above. Mention PR review + Actions troubleshooting as the bookend to the local
+pipeline you finished in Annex A.
+
+> Presenter note: the *Create PR* and *review* steps need a GitHub remote with
+> push access and the GitHub Pull Requests extension signed in. If you're offline
+> or on a fork without access, fall back to drafting the PR description with
+> `pr-summary.prompt.md` and narrate the github.com review from a screenshot.
+
+### 5f. Chat shortcuts worth knowing (`/`, `@`, `#`)
+
+A quick "get to know Copilot" beat. In the Chat box, three keystrokes change what
+you're addressing. Type each one live and let the menu pop up.
+
+| Key | What it is | Example |
+| --- | --- | --- |
+| `/` | **Slash commands** — built-in intents *plus* this repo's prompt files | `/explain`, `/tests`, `/fix`, and `/agent-feature`, `/security-review` |
+| `@` | **Participants** — scope *who* answers | `@workspace`, `@terminal`, `@vscode` |
+| `#` | **Context references** — attach *what* to look at | `#file`, a selected symbol, `#changes` |
+
+Talking points:
+
+- **`/` (slash):** the fastest shortcuts. Built-ins like `/explain`, `/tests`,
+  `/fix`, `/doc`, and `/new` are just one-word versions of common requests.
+  Because this repo enables `chat.promptFiles`, every `.prompt.md` in
+  [.github/prompts](.github/prompts) *also* appears here — so `/agent-feature`
+  loads the saved Module 5a prompt instead of pasting text by hand.
+- **`@` (participants):** decide who handles the question. `@workspace` reasons
+  over the whole repo, `@terminal` specializes in shell commands (see 2c), and
+  `@vscode` answers editor/settings questions.
+- **`#` (context):** pin specific context to a message — `#file` to attach a file,
+  a highlighted symbol, or `#changes` to reference the current diff. Great for
+  keeping Copilot focused on exactly the right code.
+
+Demo tip: combine them — e.g. `@workspace /tests #file:calculator.py` says
+"workspace participant, generate tests, for this file."
+
+---
+
+## Backup Demo Path
+
+If live generation runs long, implement one narrow slice end to end:
+
+1. Fix `savings_rate()` zero-income behavior (Module 2/4).
+2. Add tests for it (Module 4).
+3. Rerun `pytest`.
+4. Ask Copilot to summarize the diff (Module 5).
+
+---
+
+## Annex A — DevOps files (`Dockerfile` and CI workflow)
+
+Module 3e references these two files, but they ship **intentionally incomplete**
+so you can complete them live with Copilot. This annex is a self-contained,
+optional deep-dive you can run any time you want a DevOps beat. Neither file is
+exercised by `pytest`, so finishing them won't affect the coverage journey.
+
+### Starting state
+
+| File | What's missing |
+| --- | --- |
+| [Dockerfile](Dockerfile) | `WORKDIR`, dependency install, app copy, and the run command are TODO stubs. |
+| [.github/workflows/ci.yml](.github/workflows/ci.yml) | Python setup, dependency install, and the pytest step are TODO stubs. |
+
+> Talking point: both files carry guiding TODO comments. This mirrors a real
+> onboarding task — "finish the pipeline" — and shows Copilot turning intent in
+> comments into working DevOps config.
+
+### A1. Complete the Dockerfile
+
+Open [Dockerfile](Dockerfile) and prompt (Agent mode works well here):
+
+```text
+Complete this Dockerfile so Budget Buddy runs in a container: set a working directory, install dependencies from requirements-test.txt, copy the app, and run python main.py.
+```
+
+Expected result: a slim image based on `python:3.13-slim` with `WORKDIR`,
+dependency caching (copy manifest → install → copy source), and
+`CMD ["python", "main.py"]`.
+
+Validate (optional, if Docker is available on the demo machine):
+
+```powershell
+docker build -t budget-buddy .
+docker run --rm budget-buddy
+```
+
+> Presenter note: if Docker isn't installed, just review the generated file and
+> explain the layer-caching order (manifest before source). No build required to
+> make the teaching point.
+
+### A2. Finish the CI workflow
+
+Open [.github/workflows/ci.yml](.github/workflows/ci.yml) and prompt:
+
+```text
+Finish this GitHub Actions workflow: set up Python 3.13, install dependencies from requirements-test.txt, and run pytest with coverage.
+```
+
+Expected result: the `test` job gains `actions/setup-python@v5` (Python 3.13), a
+`pip install -r requirements-test.txt` step, and a `pytest` step.
+
+Talking points:
+
+- Tie it back to Module 4: the same `pytest` gate that runs locally now runs on
+  every push and PR.
+- Mention that Copilot honored the repo's existing patterns (pinned action
+  versions, `requirements-test.txt`) because it read the surrounding context.
+
+### A3. Optional: validate the workflow without pushing
+
+You can lint or dry-run the YAML locally:
+
+```powershell
+# Schema/lint check in the editor: open ci.yml and check the Problems panel.
+# Or, if you have 'act' installed, dry-run the job:
+act -n
+```
+
+> Wrap-up: this annex closes the "code → tests → ship" story — Module 3 generated
+> and refactored code, Module 4 proved it with tests, and these two files take it
+> to a reproducible container and an automated pipeline.
