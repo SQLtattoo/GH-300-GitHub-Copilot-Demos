@@ -39,6 +39,7 @@ Budget Buddy reads sample transactions from [data/sample_transactions.csv](data/
 - savings rate
 - largest expense
 - spending by category
+- top merchants by spending
 - a paginated transaction table
 
 ## Main Files
@@ -48,7 +49,7 @@ Budget Buddy reads sample transactions from [data/sample_transactions.csv](data/
 | [main.py](main.py) | Runnable demo app and report orchestration |
 | [calculator.py](calculator.py) | Budget calculations with intentional edge-case bugs |
 | [data_processor.py](data_processor.py) | Transaction filtering, grouping, duplicate detection, and TODOs |
-| [file_handler.py](file_handler.py) | CSV/JSON file I/O with an intentional path traversal gap |
+| [file_handler.py](file_handler.py) | CSV/JSON file I/O (including CSV transaction export) with an intentional path traversal gap |
 | [data_table.py](data_table.py) | Generic table helper used by the app |
 | [logger.py](logger.py) | Centralized logging utility |
 | [tests](tests) | Sparse starter tests for the coverage journey |

@@ -11,10 +11,14 @@
 
 FROM python:3.13-slim
 
-# TODO: set WORKDIR
+WORKDIR /app
 
-# TODO: copy dependency manifests and install them
+# Install dependencies first to leverage Docker layer caching
+COPY requirements-test.txt ./
+RUN pip install --no-cache-dir -r requirements-test.txt
 
-# TODO: copy the rest of the application
+# Copy the rest of the application
+COPY . .
 
-# TODO: define the container entrypoint/command, e.g. python main.py
+# Run the app
+CMD ["python", "main.py"]

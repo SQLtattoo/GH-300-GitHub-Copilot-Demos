@@ -29,3 +29,10 @@ Budget Buddy is a GH-300 training repository. Treat the codebase as a working de
 3. Run `pytest`.
 4. Update docs and changelog when behavior changes.
 5. Summarize the result and remaining risks.
+
+## Branching and Pull Requests
+- Use `main` for the starter state.
+- Use `dev` for the working branch.
+- Always use PR for merging `dev` into `main`.
+- For branch naming conventions, use `feature/<short-description>` for new features and `bugfix/<short-description>` for bug fixes.
+- Always create a GitHub issue for any new feature or bug fix before starting work on it. Reference the issue number in the PR description.

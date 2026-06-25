@@ -57,16 +57,39 @@ class BudgetCalculator:
         return result
 
     def savings_rate(self, income: float, expenses: float) -> float:
-        """Return the savings rate as a percentage of income."""
+        """Return the savings rate as a percentage of income.
+
+        Returns 0.0 when income is zero to avoid ZeroDivisionError.
+        """
+        if income == 0:
+            self.history.append("savings_rate = 0.0 (income is zero)")
+            return 0.0
         result = ((income - expenses) / income) * 100
         self.history.append(f"savings_rate = {result}")
         return result
 
     # TODO: Implement forecast_month_end_spend(transactions, days_elapsed, days_in_month)
     # It should estimate month-end spending from current month-to-date expenses.
+    def forecast_month_end_spend(self, transactions: List[Transaction], days_elapsed: int, days_in_month: int) -> float:
+        """Estimate month-end spending based on current expenses."""
+        # Placeholder implementation
+        current_expenses = self.total_expenses(transactions)
+        if days_elapsed == 0:   
+            self.history.append("forecast_month_end_spend = 0.0 (no days elapsed)")
+            return 0.0  
+        estimated_month_end_spend = (current_expenses / days_elapsed) * days_in_month
+        self.history.append(f"forecast_month_end_spend = {estimated_month_end_spend}")
+        return estimated_month_end_spend
+    
 
     # TODO: Implement is_over_budget(monthly_budget, transactions)
     # It should return True when expenses exceed the monthly budget.
+    def is_over_budget(self, monthly_budget: float, transactions: List[Transaction]) -> bool:
+        """Check if expenses exceed the monthly budget."""
+        total_expenses = self.total_expenses(transactions)
+        over_budget = total_expenses > monthly_budget
+        self.history.append(f"is_over_budget({monthly_budget}) = {over_budget}")
+        return over_budget
 
     def get_history(self) -> List[str]:
         """Return a copy of calculation history."""

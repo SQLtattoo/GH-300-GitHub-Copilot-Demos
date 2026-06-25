@@ -58,12 +58,28 @@ class BudgetFileHandler:
             json.dump(report, file, indent=2)
         self.files_processed.append(filename)
 
+    def write_transactions_csv(
+        self, filename: str, transactions: List[Transaction]
+    ) -> None:
+        """Write transactions to a CSV file.
+
+        Uses the same headers consumed by :meth:`read_transactions_csv` so the
+        exported file can be read back without transformation.
+        """
+        fieldnames = ["date", "merchant", "category", "amount", "type"]
+        filepath = os.path.join(self.base_path, filename)
+
+        with open(filepath, "w", encoding="utf-8", newline="") as file:
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+            for transaction in transactions:
+                writer.writerow({key: transaction[key] for key in fieldnames})
+
+        self.files_processed.append(filename)
+
     def get_processed_files(self) -> List[str]:
         """Return processed files."""
         return self.files_processed.copy()
-
-    # TODO: Create write_transactions_csv(filename, transactions)
-    # It should preserve the same CSV headers used by read_transactions_csv.
 
     # TODO: Create _resolve_safe_path(filename)
     # It should block absolute paths and traversal outside base_path.

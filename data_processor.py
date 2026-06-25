@@ -61,19 +61,47 @@ class TransactionProcessor:
             return None
         return max(expenses, key=lambda item: float(item["amount"]))
 
+    def top_merchants(
+        self, transactions: List[Transaction], limit: int = 5
+    ) -> List[tuple]:
+        """Return the top expense merchants by total spending.
+
+        Each entry is a ``(merchant, total)`` tuple sorted by total spending
+        descending, then by merchant name for stable ordering. Income rows are
+        ignored. Returns an empty list when there are no expenses or when
+        ``limit`` is not positive.
+        """
+        self.processed_count += 1
+        if limit <= 0:
+            return []
+
+        totals: Dict[str, float] = defaultdict(float)
+        for expense in self.expenses_only(transactions):
+            merchant = str(expense.get("merchant", "")).strip()
+            totals[merchant] += float(expense.get("amount", 0))
+
+        ranked = sorted(totals.items(), key=lambda item: (-item[1], item[0]))
+        return ranked[:limit]
+
     def find_duplicate_transactions(self, transactions: List[Transaction]) -> List[Transaction]:
         """Find probable duplicate transactions."""
-        duplicates: List[Transaction] = []
+        # Count how often each (date, amount, merchant) signature appears so we
+        # can detect duplicates in a single pass instead of comparing every pair.
+        key_counts: Dict[tuple, int] = defaultdict(int)
+        for item in transactions:
+            key = (item.get("date"), item.get("amount"), item.get("merchant"))
+            key_counts[key] += 1
 
-        for index, item in enumerate(transactions):
-            for other_index, other in enumerate(transactions):
-                if index == other_index:
-                    continue
-                same_date = item.get("date") == other.get("date")
-                same_amount = item.get("amount") == other.get("amount")
-                same_merchant = item.get("merchant") == other.get("merchant")
-                if same_date and same_amount and same_merchant and item not in duplicates:
-                    duplicates.append(item)
+        duplicates: List[Transaction] = []
+        seen: set = set()
+        for item in transactions:
+            key = (item.get("date"), item.get("amount"), item.get("merchant"))
+            if key_counts[key] <= 1:
+                continue
+            signature = tuple(sorted(item.items()))
+            if signature not in seen:
+                seen.add(signature)
+                duplicates.append(item)
 
         return duplicates
 

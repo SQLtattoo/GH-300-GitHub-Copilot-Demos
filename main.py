@@ -30,6 +30,7 @@ def build_report(monthly_budget: float, transactions: list[dict[str, object]]) -
         "savings_rate": calculator.savings_rate(income, expenses),
         "largest_expense": processor.largest_expense(transactions),
         "category_totals": category_totals,
+        "top_merchants": processor.top_merchants(transactions),
     }
 
 
@@ -73,6 +74,9 @@ def main() -> None:
     logger.info(f"Savings rate: {report['savings_rate']:.1f}%")
     logger.info(f"Largest expense: {report['largest_expense']}")
     logger.info(f"Category totals: {report['category_totals']}")
+    logger.info("Top merchants:")
+    for merchant, total in report["top_merchants"]:
+        logger.info(f"  {merchant}: {format_currency(total)}")
     logger.info("Demo-start app completed. Now use Copilot to harden it.")
 
 
