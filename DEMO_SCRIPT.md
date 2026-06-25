@@ -116,6 +116,93 @@ MS-internal.
 > stack. Do not demo the MS-internal Azure agents unless your audience has the
 > same tooling configured.
 
+### 1c. Explore the GitHub Copilot Trust Center
+
+The Trust Center is a public, no-login page. Open it live in a browser — nothing
+to configure first.
+
+**URL:** [https://copilot.github.trust.page](https://copilot.github.trust.page)
+
+Walk the page top to bottom:
+
+1. **Compliance badges** — SOC 1, SOC 2, SOC 3, ISO 27001:2013, CSA STAR Level 2,
+   TISAX, and ISO/IEC 42001:2023 (the AI management system standard, achieved
+   March 2026). Click any badge to download the certificate or report.
+2. **Data used section** — four categories GitHub collects:
+   - *Prompts* — your code context and chat input sent to the model.
+   - *Suggestions* — the AI responses returned to you.
+   - *Feedback data* — thumbs up/down and support tickets.
+   - *User engagement data* — pseudonymous interaction metrics (accepted/dismissed
+     completions, error logs).
+3. **FAQ** — click "Does GitHub use Copilot Business or Enterprise data to train
+   AI models?" The answer is **no**. This is the slide every legal/security team
+   asks about — show it directly rather than quoting it.
+4. **Resources tab** — downloadable SOC 2 Type 2 report, bridge letters, PCI DSS
+   report. Useful for enterprise procurement.
+5. **Updates tab** — shows the compliance changelog. Demonstrates that the posture
+   is maintained and auditable over time.
+
+Talking points:
+
+- This is what you send to your CISO, legal team, or enterprise customer before
+  procurement — one URL, all the evidence.
+- The ISO/IEC 42001 cert is notable: it is the international standard for AI
+  management systems, not just security. GitHub is one of the first major AI
+  platforms to hold it.
+- The "no training on Business/Enterprise data" commitment is contractual, not
+  just a policy page — it is backed by the Microsoft Product Terms.
+
+---
+
+### 1d. Managing GitHub Copilot policies (org admin demo)
+
+> **Requires:** Organization owner or enterprise admin role on GitHub.com.
+> If you are showing this to an audience, screenshare your own org settings —
+> do not ask attendees to change their org policies live.
+
+**Path:** GitHub.com → your profile picture (top-right) → **Your organizations** →
+select org → **Settings** tab → sidebar: **Code, planning, and automation** →
+**Copilot** → **Policies**
+
+Step by step:
+
+1. Go to **github.com**, click your profile picture (top-right), choose
+   **Your organizations**, then click the org you want to manage.
+2. Click the **Settings** tab in the org header.
+3. In the left sidebar, under *Code, planning, and automation*, click **Copilot**.
+4. Click **Policies** (next to Models) to see the feature policy panel.
+5. Walk through the key policy toggles:
+
+   | Policy | What to show |
+   | --- | --- |
+   | **Suggestions matching public code** | Set to *Blocked* to prevent suggestions that match licensed public code — the IP protection talking point. |
+   | **Copilot Chat in IDE and mobile** | Enable or restrict Chat access org-wide. |
+   | **Copilot on GitHub.com** | Controls the web UI chat and PR summaries. |
+   | **MCP servers in Copilot** | Enables/restricts Model Context Protocol server support (Module 5 topic). |
+   | **Agent apps** | Separate toggle for third-party Copilot agent app marketplace access. |
+   | **Opt in to preview features** | Lets your org try GA-candidates before official release. |
+
+6. Click **Models** (next to Policies) to show which models are available
+   (e.g. GPT-4o, Claude Sonnet, Gemini) and whether the org allows premium models
+   that may incur additional cost.
+7. To manage **seats**: in the same sidebar click **Access** → here you can assign
+   seats by team, revoke individual seats, and see *last active* dates to identify
+   unused licenses.
+
+> **Enterprise vs. org:** if the org is inside a GitHub Enterprise Cloud account,
+> an enterprise admin can lock policies at the enterprise level — the org-level
+> dropdown will show greyed-out values for locked policies. Mention this so
+> admins understand the inheritance model.
+
+Talking points:
+
+- Policies are enforced server-side. An individual developer cannot override the
+  "block matching public code" policy by changing a VS Code setting.
+- Seat management via *last active* makes it easy to reclaim licenses from
+  developers who have stopped using Copilot.
+- The **Models** tab lets the org balance capability vs. cost — premium models
+  are opt-in per org, not on by default.
+
 No code changes in this module.
 
 ---
