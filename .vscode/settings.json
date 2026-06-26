@@ -2,5 +2,15 @@
     // Always open classic editor Inline Chat with Ctrl+I, even when a file
     // is part of an active chat session. Without this, Ctrl+I shows
     // "Ask in Chat" instead of "Open Inline Chat".
-    "inlineChat.askInChat": false
+    "inlineChat.askInChat": false,
+    "github.copilot.enable": {
+    "*": true,
+    "yaml": false,
+    "plaintext": false
+  },
+  "python.testing.pytestArgs": [
+    "tests"
+  ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }

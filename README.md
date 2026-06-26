@@ -7,9 +7,10 @@ The goal is to show Copilot as more than autocomplete: codebase explanation, inl
 ## Current Demo State
 
 - Runnable app: `python main.py`
-- Starter tests: 8 tests
+- Starter tests: 26 tests
 - Current coverage target: about 30%
 - Workshop goal: use Copilot to reach 90%+ coverage
+- Current local coverage run: 94% across app modules with an 80% gate
 - Intentional issues: documented in [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md)
 - Trainer flow: documented in [DEMO_SCRIPT.md](DEMO_SCRIPT.md)
 
@@ -41,6 +42,8 @@ Budget Buddy reads sample transactions from [data/sample_transactions.csv](data/
 - spending by category
 - a paginated transaction table
 
+Implementation note: duplicate transaction detection in [data_processor.py](data_processor.py) now uses key-based aggregation for linear-time matching.
+
 ## Main Files
 
 | File | Purpose |
@@ -48,7 +51,7 @@ Budget Buddy reads sample transactions from [data/sample_transactions.csv](data/
 | [main.py](main.py) | Runnable demo app and report orchestration |
 | [calculator.py](calculator.py) | Budget calculations with intentional edge-case bugs |
 | [data_processor.py](data_processor.py) | Transaction filtering, grouping, duplicate detection, and TODOs |
-| [file_handler.py](file_handler.py) | CSV/JSON file I/O with an intentional path traversal gap |
+| [file_handler.py](file_handler.py) | CSV/JSON file I/O with base-path validation for safer file access |
 | [data_table.py](data_table.py) | Generic table helper used by the app |
 | [logger.py](logger.py) | Centralized logging utility |
 | [tests](tests) | Sparse starter tests for the coverage journey |

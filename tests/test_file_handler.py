@@ -1,31 +1,58 @@
-"""Starter tests for BudgetFileHandler."""
+import json
+
+import pytest
+
+from file_handler import BudgetFileHandler, FileHandler
 
 
-def test_read_transactions_csv(file_handler, tmp_path):
-    """Read transactions from a simple CSV file."""
-    csv_file = tmp_path / "transactions.csv"
-    csv_file.write_text(
+def test_file_handler_reads_csv_json_and_writes_report(tmp_path) -> None:
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+
+    csv_path = data_dir / "transactions.csv"
+    csv_path.write_text(
         "date,merchant,category,amount,type\n"
-        "2026-06-01,Payroll,Income,5000.00,income\n"
-        "2026-06-02,Grocery,Groceries,120.00,expense\n",
+        "2026-06-01,Store,Groceries,10.5,expense\n",
         encoding="utf-8",
     )
 
-    transactions = file_handler.read_transactions_csv("transactions.csv")
+    json_path = data_dir / "transactions.json"
+    json_payload = [
+        {
+            "date": "2026-06-02",
+            "merchant": "Cafe",
+            "category": "Dining",
+            "amount": 20.0,
+            "type": "expense",
+        }
+    ]
+    json_path.write_text(json.dumps(json_payload), encoding="utf-8")
 
-    assert len(transactions) == 2
-    assert transactions[1]["amount"] == 120.0
+    handler = BudgetFileHandler(str(data_dir))
+    csv_rows = handler.read_transactions_csv("transactions.csv")
+    json_rows = handler.read_transactions_json("transactions.json")
+
+    assert csv_rows[0]["amount"] == 10.5
+    assert json_rows == json_payload
+
+    report = {"total": 30.5}
+    handler.write_report_json("report.json", report)
+    assert json.loads((data_dir / "report.json").read_text(encoding="utf-8")) == report
+
+    processed_files = handler.get_processed_files()
+    assert processed_files == ["transactions.csv", "transactions.json", "report.json"]
 
 
-def test_processed_files_are_tracked(file_handler, tmp_path):
-    """Track files read by the handler."""
-    csv_file = tmp_path / "transactions.csv"
-    csv_file.write_text(
-        "date,merchant,category,amount,type\n"
-        "2026-06-02,Grocery,Groceries,120.00,expense\n",
-        encoding="utf-8",
-    )
+def test_file_handler_blocks_absolute_and_traversal_paths(tmp_path) -> None:
+    handler = BudgetFileHandler(str(tmp_path))
 
-    file_handler.read_transactions_csv("transactions.csv")
+    with pytest.raises(ValueError):
+        handler.read_transactions_json("../outside.json")
 
-    assert file_handler.get_processed_files() == ["transactions.csv"]
+    with pytest.raises(ValueError):
+        handler.read_transactions_json("C:/outside.json")
+
+
+def test_file_handler_alias_points_to_budget_file_handler() -> None:
+    handler = FileHandler(".")
+    assert isinstance(handler, BudgetFileHandler)

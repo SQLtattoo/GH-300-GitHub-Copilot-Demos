@@ -3,6 +3,7 @@
 Budget Buddy is a GH-300 training repository. Treat the codebase as a working demo-start app, not as finished production software.
 
 ## Important Context
+- Always update the devloper README.md with any new instructions or changes to the app.
 - The app should run from `python main.py`.
 - The starter test suite should pass at roughly 30% coverage.
 - The trainer will use Copilot to generate tests, fix bugs, review security, refactor performance issues, and update docs.
@@ -29,3 +30,10 @@ Budget Buddy is a GH-300 training repository. Treat the codebase as a working de
 3. Run `pytest`.
 4. Update docs and changelog when behavior changes.
 5. Summarize the result and remaining risks.
+
+## GitHub operations
+- Use `git commit -m "..."` for commits. 
+- Never push to origin without explicit permission.
+- Always develop on a feature branch.
+- Names branches based on work i.e. `feature/transaction-processor-refactor` or `bugfix/json-path-traversal`.
+
