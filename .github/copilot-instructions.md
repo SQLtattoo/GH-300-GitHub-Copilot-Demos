@@ -35,5 +35,5 @@ Budget Buddy is a GH-300 training repository. Treat the codebase as a working de
 - Use `git commit -m "..."` for commits. 
 - Never push to origin without explicit permission.
 - Always develop on a feature branch.
-- Names branches based on work i.e. `feature/transaction-processor-refactor` or `bugfix/json-path-traversal`.
+- Name branches based on work i.e. `feature/transaction-processor-refactor` or `bugfix/json-path-traversal`.
 
