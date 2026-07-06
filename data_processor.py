@@ -70,7 +70,9 @@ class TransactionProcessor:
 
         for expense in self.expenses_only(transactions):
             merchant = str(expense.get("merchant", "")).strip()
-            totals[merchant] += float(expense.get("amount", 0))
+            if not merchant:
+                continue
+            totals[merchant] += float(expense.get("amount") or 0)
 
         ranked = sorted(totals.items(), key=lambda pair: (-pair[1], pair[0]))
         if limit < 0:

@@ -63,6 +63,16 @@ def test_top_merchants_empty():
     assert processor.top_merchants([]) == []
 
 
+def test_top_merchants_skips_blank_merchants_and_handles_none_amount():
+    processor = TransactionProcessor()
+    txns = [
+        {"merchant": " ", "amount": 40.0, "type": "expense"},
+        {"merchant": "Cafe", "amount": None, "type": "expense"},
+        {"merchant": "Cafe", "amount": 10.0, "type": "expense"},
+    ]
+    assert processor.top_merchants(txns) == [("Cafe", 10.0)]
+
+
 def test_find_duplicate_transactions():
     processor = TransactionProcessor()
     txns = [

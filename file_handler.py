@@ -7,6 +7,7 @@ gap so Copilot can demonstrate secure refactoring and test generation.
 
 import csv
 import json
+import ntpath
 import os
 from typing import Dict, List
 
@@ -24,7 +25,7 @@ class BudgetFileHandler:
 
     def _resolve_safe_path(self, filename: str) -> str:
         """Resolve a path and reject traversal outside the configured base path."""
-        if os.path.isabs(filename):
+        if os.path.isabs(filename) or ntpath.isabs(filename):
             raise ValueError("File path must be relative to the base directory")
 
         candidate_path = os.path.abspath(os.path.join(self.base_path, filename))

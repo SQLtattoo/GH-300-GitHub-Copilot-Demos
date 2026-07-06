@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Hardened [file_handler.py](file_handler.py) with safe path resolution to block absolute paths and directory traversal outside the configured base directory for CSV/JSON reads and JSON writes.
 - Added a security regression test in [tests/test_file_handler.py](tests/test_file_handler.py) to verify traversal attempts are rejected.
+- Fixed cross-platform absolute path detection in [file_handler.py](file_handler.py) so Windows-style absolute paths are rejected even when tests run on Linux/macOS.
+- Fixed [data_processor.py](data_processor.py) `top_merchants()` to ignore blank merchant names and treat `amount=None` as zero instead of raising `TypeError`.
 
 ### Added
 - Added a **top merchants** section to the monthly report: `TransactionProcessor.top_merchants()` in [data_processor.py](data_processor.py) ranks expense merchants by total spend, wired into `build_report()` and the console output in [main.py](main.py), with tests in [tests/test_data_processor.py](tests/test_data_processor.py) and [tests/test_main.py](tests/test_main.py).
