@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added a security regression test in [tests/test_file_handler.py](tests/test_file_handler.py) to verify traversal attempts are rejected.
 
 ### Added
+- Added a **top merchants** section to the monthly report: `TransactionProcessor.top_merchants()` in [data_processor.py](data_processor.py) ranks expense merchants by total spend, wired into `build_report()` and the console output in [main.py](main.py), with tests in [tests/test_data_processor.py](tests/test_data_processor.py) and [tests/test_main.py](tests/test_main.py).
+- Re-established the pytest setup with a **per-module** coverage gate: [pytest.ini](pytest.ini) plus a [tests/conftest.py](tests/conftest.py) hook that fails the session unless every source module reaches at least 80% line coverage (enforced per module, not on the average).
+- Added per-module test files under [tests/](tests) covering the calculator, transaction processor, file handler, logger, data table, and main app (64 tests; all source modules at 98-100%).
 - Revamped the repository into **Budget Buddy**, a working Personal Budget & Expense Tracker demo app for GH-300 delivery.
 - Added sample transaction data in [data/sample_transactions.csv](data/sample_transactions.csv).
 - Added a sparse starter pytest suite designed to begin around 30% coverage.
@@ -22,7 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Replaced arithmetic-only calculator examples with budget calculation helpers.
 - Replaced generic data processing examples with transaction processing helpers.
 - Replaced generic file examples with CSV/JSON budget data loading helpers.
-- Updated pytest configuration to use a demo-start `30%` coverage threshold.
+- Updated pytest configuration to enforce an 80% per-module coverage gate.
 - Refreshed README, quick reference, setup script, reset script, and Copilot instructions for the app-centered demo flow.
 
 ### Intentional Demo Gaps

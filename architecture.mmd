@@ -1,0 +1,52 @@
+flowchart TD
+    user[Developer or trainer] --> entry[python main.py]
+
+    subgraph app[Application orchestration]
+        entry --> main[main]
+        main --> load[Load transactions]
+        main --> report[Build report]
+        main --> table[Show transactions]
+    end
+
+    subgraph data[Data sources]
+        csv[data/sample_transactions.csv]
+        json[Optional JSON transactions]
+    end
+
+    subgraph io[File access layer]
+        handler[BudgetFileHandler]
+        safePath[_resolve_safe_path]
+    end
+
+    subgraph domain[Budget domain logic]
+        calculator[BudgetCalculator]
+        processor[TransactionProcessor]
+        dataTable[DataTable]
+    end
+
+    subgraph output[Output]
+        logger[logger]
+        console[Console report]
+    end
+
+    load --> handler
+    handler --> safePath
+    safePath --> csv
+    safePath -. supported by handler .-> json
+    handler --> transactions[Transaction dictionaries]
+
+    transactions --> calculator
+    transactions --> processor
+    transactions --> dataTable
+
+    calculator --> report
+    processor --> report
+    dataTable --> table
+
+    report --> logger
+    table --> logger
+    logger --> console
+
+    tests[pytest tests] -. validate .-> calculator
+    tests -. validate .-> processor
+    tests -. validate .-> handler

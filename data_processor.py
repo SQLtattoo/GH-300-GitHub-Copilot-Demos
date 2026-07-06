@@ -6,7 +6,7 @@ validation, and TODOs so GitHub Copilot can improve it during the workshop.
 """
 
 from collections import defaultdict
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 
 Transaction = Dict[str, object]
@@ -38,19 +38,10 @@ class TransactionProcessor:
         """Return expense totals grouped by category."""
         self.processed_count += 1
         totals: Dict[str, float] = defaultdict(float)
-        expenses = self.expenses_only(transactions)
 
-        # PERFORMANCE ISSUE: This nested loop is easy to refactor with one pass.
-        for expense in expenses:
+        for expense in self.expenses_only(transactions):
             category = self.normalize_category(str(expense.get("category", "")))
-            for candidate in expenses:
-                candidate_category = self.normalize_category(str(candidate.get("category", "")))
-                if candidate_category == category:
-                    totals[category] += float(candidate.get("amount", 0))
-            expenses = [
-                item for item in expenses
-                if self.normalize_category(str(item.get("category", ""))) != category
-            ]
+            totals[category] += float(expense.get("amount", 0))
 
         return dict(totals)
 
@@ -60,6 +51,31 @@ class TransactionProcessor:
         if not expenses:
             return None
         return max(expenses, key=lambda item: float(item["amount"]))
+
+    def top_merchants(
+        self, transactions: List[Transaction], limit: int = 5
+    ) -> List[Tuple[str, float]]:
+        """Return the top expense merchants by total spend, highest first.
+
+        Args:
+            transactions: The transactions to summarize.
+            limit: Maximum number of merchants to return.
+
+        Returns:
+            A list of ``(merchant, total)`` tuples sorted by total spend
+            descending, then by merchant name for stable ties.
+        """
+        self.processed_count += 1
+        totals: Dict[str, float] = defaultdict(float)
+
+        for expense in self.expenses_only(transactions):
+            merchant = str(expense.get("merchant", "")).strip()
+            totals[merchant] += float(expense.get("amount", 0))
+
+        ranked = sorted(totals.items(), key=lambda pair: (-pair[1], pair[0]))
+        if limit < 0:
+            limit = 0
+        return ranked[:limit]
 
     def find_duplicate_transactions(self, transactions: List[Transaction]) -> List[Transaction]:
         """Find probable duplicate transactions."""
