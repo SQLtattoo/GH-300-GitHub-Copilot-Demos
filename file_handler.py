@@ -19,12 +19,23 @@ class BudgetFileHandler:
 
     def __init__(self, base_path: str = ".") -> None:
         """Initialize the handler with a base path."""
-        self.base_path = base_path
+        self.base_path = os.path.abspath(base_path)
         self.files_processed: List[str] = []
+
+    def _resolve_safe_path(self, filename: str) -> str:
+        """Resolve a path and reject traversal outside the configured base path."""
+        if os.path.isabs(filename):
+            raise ValueError("File path must be relative to the base directory")
+
+        candidate_path = os.path.abspath(os.path.join(self.base_path, filename))
+        if os.path.commonpath([self.base_path, candidate_path]) != self.base_path:
+            raise ValueError("File path resolves outside the base directory")
+
+        return candidate_path
 
     def read_transactions_csv(self, filename: str) -> List[Transaction]:
         """Read transactions from a CSV file."""
-        filepath = os.path.join(self.base_path, filename)
+        filepath = self._resolve_safe_path(filename)
         transactions: List[Transaction] = []
 
         with open(filepath, "r", encoding="utf-8", newline="") as file:
@@ -45,7 +56,7 @@ class BudgetFileHandler:
 
     def read_transactions_json(self, filename: str) -> List[Transaction]:
         """Read transactions from a JSON file."""
-        filepath = os.path.join(self.base_path, filename)
+        filepath = self._resolve_safe_path(filename)
         with open(filepath, "r", encoding="utf-8") as file:
             data = json.load(file)
         self.files_processed.append(filename)
@@ -53,7 +64,7 @@ class BudgetFileHandler:
 
     def write_report_json(self, filename: str, report: Dict[str, object]) -> None:
         """Write a summary report as JSON."""
-        filepath = os.path.join(self.base_path, filename)
+        filepath = self._resolve_safe_path(filename)
         with open(filepath, "w", encoding="utf-8") as file:
             json.dump(report, file, indent=2)
         self.files_processed.append(filename)
@@ -64,9 +75,6 @@ class BudgetFileHandler:
 
     # TODO: Create write_transactions_csv(filename, transactions)
     # It should preserve the same CSV headers used by read_transactions_csv.
-
-    # TODO: Create _resolve_safe_path(filename)
-    # It should block absolute paths and traversal outside base_path.
 
     # TODO: Improve read_transactions_csv to reject malformed rows with clear errors.
 

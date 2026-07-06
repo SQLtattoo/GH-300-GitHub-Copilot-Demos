@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+- Hardened [file_handler.py](file_handler.py) with safe path resolution to block absolute paths and directory traversal outside the configured base directory for CSV/JSON reads and JSON writes.
+- Added a security regression test in [tests/test_file_handler.py](tests/test_file_handler.py) to verify traversal attempts are rejected.
+
 ### Added
 - Revamped the repository into **Budget Buddy**, a working Personal Budget & Expense Tracker demo app for GH-300 delivery.
 - Added sample transaction data in [data/sample_transactions.csv](data/sample_transactions.csv).
