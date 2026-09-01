@@ -34,8 +34,9 @@ def setup_logger(
     # Remove existing handlers to avoid duplicates
     logger.handlers.clear()
     
-    # Create formatter
-    formatter = logging.Formatter(
+    # Keep interactive reports compact; preserve diagnostic context in files.
+    console_formatter = logging.Formatter(fmt="%(message)s")
+    file_formatter = logging.Formatter(
         fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
@@ -43,7 +44,7 @@ def setup_logger(
     # Console handler
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(level)
-    console_handler.setFormatter(formatter)
+    console_handler.setFormatter(console_formatter)
     logger.addHandler(console_handler)
     
     # File handler (optional)
@@ -54,7 +55,7 @@ def setup_logger(
             os.makedirs(log_dir)
         file_handler = logging.FileHandler(log_file, encoding='utf-8')
         file_handler.setLevel(level)
-        file_handler.setFormatter(formatter)
+        file_handler.setFormatter(file_formatter)
         logger.addHandler(file_handler)
     
     return logger

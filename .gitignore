@@ -25,7 +25,7 @@ venv/
 env/
 ENV/
 .venv/
-.venv/
+
 # IDE
 .vscode/*
 !.vscode/settings.json

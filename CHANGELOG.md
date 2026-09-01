@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added reusable Copilot prompt files under [.github/prompts](.github/prompts).
 
 ### Changed
+- Simplified console logging to show report messages without timestamp, logger name, or level prefixes.
 - Replaced arithmetic-only calculator examples with budget calculation helpers.
 - Replaced generic data processing examples with transaction processing helpers.
 - Replaced generic file examples with CSV/JSON budget data loading helpers.

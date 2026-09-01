@@ -8,7 +8,7 @@ Pick the depth that fits your time slot (45-90 minutes).
 
 | Module | Theme | Budget Buddy demo | Key assets |
 | --- | --- | --- | --- |
-| 1 | Introduction to GitHub Copilot | Set up, run the app, frame the use case | `setup_demo.ps1`, `main.py` |
+| 1 | Introduction to GitHub Copilot | Set up, run the app, explain repository instructions | `setup_demo.ps1`, `.github/copilot-instructions.md` |
 | 2 | Exploring Copilot's Features | Chat, Inline Chat, CLI, prompts with context | `calculator.py`, `.github/prompts` |
 | 3 | Developer Use Cases | Generate, transform, optimize, document, DevOps | `data_processor.py`, `Dockerfile`, CI |
 | 4 | Building Unit Tests | The coverage journey from ~30% to 90%+ | `tests`, `pytest.ini` |
@@ -64,9 +64,52 @@ Talking points:
 
 - What Copilot is and the value proposition (less boilerplate, faster onboarding).
 - Responsible AI: suggestions are assistive; the developer stays accountable.
-- Point at `.github/copilot-instructions.md` to show repo-level guidance.
+- Repository instructions are implicit context: Copilot may follow them even when
+  the prompt does not repeat every requirement.
 
-### 1a. Settings worth showing
+### 1a. Repository instructions and unexpected file changes
+
+Open [.github/copilot-instructions.md](.github/copilot-instructions.md) before the
+first coding demonstration. Point out these rules:
+
+- add or update tests first when practical;
+- run `pytest` after changes;
+- update `README.md` when commands or behavior change;
+- update `CHANGELOG.md` for meaningful changes.
+
+Ask Copilot in **Ask** mode:
+
+```text
+Read the repository instructions. Which files might you update in addition to the
+file named in my prompt, and why?
+```
+
+Narration:
+
+> "Repository instructions are automatically included as context. If I ask for a
+> feature and Copilot also updates tests or the changelog, it is not inventing
+> unrelated work—it is following our checked-in team rules. Agent mode should
+> still show those files in its plan and diff, and I remain responsible for
+> reviewing every change. If we do not want a behavior, we change the instruction
+> rather than repeatedly correcting Copilot in individual prompts."
+
+Optionally demonstrate that the file is editable team policy. Add a temporary
+instruction such as:
+
+```text
+- Before editing, identify which repository instructions affect the requested task.
+```
+
+Ask Copilot to plan a small change and show that it identifies the applicable
+rules. Restore the temporary line afterward so the remaining demonstrations stay
+on the standard script.
+
+> **Why did Copilot touch `CHANGELOG.md`?** The instruction explicitly requires it
+> for meaningful changes. Explain this before Module 2 so later multi-file edits
+> are expected rather than surprising. A file should appear in the final diff only
+> when the rule actually applies.
+
+### 1b. Settings worth showing
 
 Open Settings with `Ctrl+,` and type `copilot` to reveal the whole surface, then
 call out a few that matter. Switch to "Preferences: Open Settings (JSON)" to make
@@ -88,7 +131,7 @@ the point that everything is just text and that workspace settings (this repo's
 > This repo preconfigures `inlineChat.askInChat: false` in `.vscode/settings.json`
 > so `Ctrl+I` reliably opens classic Inline Chat for the Module 2 demo.
 
-### 1b. Chat modes and custom agents
+### 1c. Chat modes and custom agents
 
 When you open the Copilot Chat input box you see a mode picker with three options.
 These ship with the GitHub Copilot extension in VS Code (`v1.99+`) and are
@@ -116,7 +159,7 @@ MS-internal.
 > stack. Do not demo the MS-internal Azure agents unless your audience has the
 > same tooling configured.
 
-### 1c. Explore the GitHub Copilot Trust Center
+### 1d. Explore the GitHub Copilot Trust Center
 
 The Trust Center is a public, no-login page. Open it live in a browser — nothing
 to configure first.
@@ -154,7 +197,7 @@ Talking points:
 
 ---
 
-### 1d. Managing GitHub Copilot policies (org admin demo)
+### 1e. Managing GitHub Copilot policies (org admin demo)
 
 > **Requires:** Organization owner or enterprise admin role on GitHub.com.
 > If you are showing this to an audience, screenshare your own org settings —
@@ -258,7 +301,8 @@ How do I run this app and its tests with coverage?
 ```
 
 ```text
-Add a .gitignore entry for the htmlcov coverage folder and explain why.
+Inspect .gitignore, then add an entry for generated *.log files if it is missing
+and explain why Budget Buddy should not commit runtime logs.
 ```
 
 You can also run a one-shot prompt without entering the session:
@@ -397,7 +441,7 @@ Add CSV export support for transactions. Update file_handler.py, add tests, upda
 
 Watch Copilot plan, edit several files, run tests, and report back.
 
-### 5b. Custom instructions and AGENT.md
+### 5b. Custom instructions and AGENT.md recap
 
 Open [AGENT.md](AGENT.md) and [.github/copilot-instructions.md](.github/copilot-instructions.md).
 
@@ -406,7 +450,9 @@ Narration:
 > "Copilot reads project files that describe *how we work*. `copilot-instructions.md`
 > sets repo-wide rules, and `AGENT.md` gives an agent its operating manual for this
 > repo — build and test commands, conventions, and guardrails. Because these live
-> in the repo, every teammate and every Copilot session follows the same playbook."
+> in the repo, every teammate and every Copilot session follows the same playbook.
+> We introduced the always-on instructions in Module 1; now we are combining them
+> with Agent mode and more specialized guidance."
 
 ### 5c. Skills (SKILL.md)
 
