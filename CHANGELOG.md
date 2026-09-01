@@ -18,11 +18,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Replaced arithmetic-only calculator examples with budget calculation helpers.
 - Replaced generic data processing examples with transaction processing helpers.
 - Replaced generic file examples with CSV/JSON budget data loading helpers.
+- Restricted file reads and report writes to the configured base directory to prevent path traversal.
+- Refactored expense category aggregation from nested scans to a single pass.
 - Updated pytest configuration to use a demo-start `30%` coverage threshold.
 - Refreshed README, quick reference, setup script, reset script, and Copilot instructions for the app-centered demo flow.
 
 ### Intentional Demo Gaps
 - Coverage is intentionally low at the start of the demo.
 - Several TODOs and bugs are intentionally present for Copilot-assisted implementation.
-- File handling intentionally includes a path traversal risk for security review demos.
-- Transaction processing intentionally includes O(n^2) logic for refactoring demos.
