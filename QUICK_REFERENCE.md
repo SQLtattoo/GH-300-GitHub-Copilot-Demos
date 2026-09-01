@@ -34,9 +34,6 @@ pytest --cov=. --cov-report=term-missing
 
 ## Intentional Issues
 
-- `BudgetCalculator.average_expense()` fails on empty expense lists.
-- `BudgetCalculator.category_percentage()` divides by zero when total expenses are zero.
-- `BudgetCalculator.savings_rate()` divides by zero when income is zero.
 - `TransactionProcessor.group_expenses_by_category()` uses inefficient nested loops.
 - `TransactionProcessor.find_duplicate_transactions()` uses O(n^2) duplicate detection.
 - `TransactionProcessor.validate_transaction()` accepts negative amounts and unknown types.

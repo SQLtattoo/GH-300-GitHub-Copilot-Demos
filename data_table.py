@@ -454,6 +454,9 @@ def process_table_data(
         >>> result['rows']
         [{'name': 'Alice', 'age': 30}, {'name': 'Bob', 'age': 25}]
     """
+    if rows_per_page < 1:
+        raise ValueError("rows_per_page must be at least 1")
+
     # Apply search filter
     filtered_data = data
     if search_query:

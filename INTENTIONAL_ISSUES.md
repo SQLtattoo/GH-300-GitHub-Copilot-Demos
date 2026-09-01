@@ -6,9 +6,6 @@ Budget Buddy starts from a realistic but incomplete codebase. These issues are d
 
 | Module | Area | File | Issue | Demo Value |
 | --- | --- | --- | --- | --- |
-| 4 | Edge cases | [calculator.py](calculator.py) | Empty expense lists raise `ZeroDivisionError` | Bug fixing + tests |
-| 4 | Edge cases | [calculator.py](calculator.py) | Category percentage divides by zero | Defensive programming |
-| 4 | Edge cases | [calculator.py](calculator.py) | Savings rate divides by zero when income is zero | Test-driven bug fix |
 | 3 | Validation | [data_processor.py](data_processor.py) | Negative amounts and unknown transaction types are accepted | Input validation |
 | 2 | Security | [file_handler.py](file_handler.py) | JSON reads do not validate paths | Security review |
 | 4 | CSV handling | [file_handler.py](file_handler.py) | Malformed CSV rows fail unclearly | Error handling |

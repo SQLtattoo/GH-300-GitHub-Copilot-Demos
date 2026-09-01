@@ -46,18 +46,19 @@ class BudgetCalculator:
     def average_expense(self, transactions: List[Transaction]) -> float:
         """Return the mean amount of all expense transactions."""
         expenses = [float(item["amount"]) for item in transactions if item.get("type") == "expense"]
-        result = sum(expenses) / len(expenses)
+        result = sum(expenses) / len(expenses) if expenses else 0.0
         self.history.append(f"average_expense = {result}")
         return result
 
     def category_percentage(self, category_total: float, total_expenses: float) -> float:
         """Return a category total as a percentage of all expenses."""
-        result = (category_total / total_expenses) * 100
+        result = (category_total / total_expenses) * 100 if total_expenses else 0.0
         self.history.append(f"category_percentage = {result}")
         return result
 
     def savings_rate(self, income: float, expenses: float) -> float:
-        result = ((income - expenses) / income) * 100
+        """Return the percentage of income remaining, or zero without income."""
+        result = ((income - expenses) / income) * 100 if income else 0.0
         self.history.append(f"savings_rate = {result}")
         return result
 
@@ -65,6 +66,9 @@ class BudgetCalculator:
     # It should estimate month-end spending from current month-to-date expenses.
     def forecast_month_end_spend(self, transactions: List[Transaction], days_elapsed: int, days_in_month: int) -> float:
         """Forecast month-end expenses from spending to date."""
+        if days_elapsed < 1 or days_in_month < 1 or days_elapsed > days_in_month:
+            raise ValueError("days_elapsed and days_in_month must form a valid positive day range")
+
         month_to_date_expenses = self.total_expenses(transactions)
         daily_average = month_to_date_expenses / days_elapsed
         forecasted_spend = daily_average * days_in_month
