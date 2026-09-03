@@ -1,13 +1,12 @@
 """
 File loading helpers for the Budget Buddy demo app.
 
-This module intentionally starts with simple file handling and a path traversal
-gap so Copilot can demonstrate secure refactoring and test generation.
+File operations are restricted to the configured base path.
 """
 
 import csv
 import json
-import os
+from pathlib import Path
 from typing import Dict, List
 
 
@@ -24,7 +23,7 @@ class BudgetFileHandler:
 
     def read_transactions_csv(self, filename: str) -> List[Transaction]:
         """Read transactions from a CSV file."""
-        filepath = os.path.join(self.base_path, filename)
+        filepath = self._resolve_safe_path(filename)
         transactions: List[Transaction] = []
 
         with open(filepath, "r", encoding="utf-8", newline="") as file:
@@ -45,15 +44,29 @@ class BudgetFileHandler:
 
     def read_transactions_json(self, filename: str) -> List[Transaction]:
         """Read transactions from a JSON file."""
-        filepath = os.path.join(self.base_path, filename)
+        filepath = self._resolve_safe_path(filename)
         with open(filepath, "r", encoding="utf-8") as file:
             data = json.load(file)
         self.files_processed.append(filename)
         return data
 
+    def write_transactions_csv(
+        self, filename: str, transactions: List[Transaction]
+    ) -> None:
+        """Write transactions to a CSV file compatible with the CSV reader."""
+        filepath = self._resolve_safe_path(filename)
+        fieldnames = ["date", "merchant", "category", "amount", "type"]
+
+        with open(filepath, "w", encoding="utf-8", newline="") as file:
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(transactions)
+
+        self.files_processed.append(filename)
+
     def write_report_json(self, filename: str, report: Dict[str, object]) -> None:
         """Write a summary report as JSON."""
-        filepath = os.path.join(self.base_path, filename)
+        filepath = self._resolve_safe_path(filename)
         with open(filepath, "w", encoding="utf-8") as file:
             json.dump(report, file, indent=2)
         self.files_processed.append(filename)
@@ -62,11 +75,17 @@ class BudgetFileHandler:
         """Return processed files."""
         return self.files_processed.copy()
 
-    # TODO: Create write_transactions_csv(filename, transactions)
-    # It should preserve the same CSV headers used by read_transactions_csv.
+    def _resolve_safe_path(self, filename: str) -> Path:
+        """Resolve a filename and ensure it remains inside the base path."""
+        requested_path = Path(filename)
+        if requested_path.is_absolute():
+            raise ValueError("Absolute paths are not allowed")
 
-    # TODO: Create _resolve_safe_path(filename)
-    # It should block absolute paths and traversal outside base_path.
+        base_path = Path(self.base_path).resolve()
+        resolved_path = (base_path / requested_path).resolve()
+        if not resolved_path.is_relative_to(base_path):
+            raise ValueError("Path must remain inside the base path")
+        return resolved_path
 
     # TODO: Improve read_transactions_csv to reject malformed rows with clear errors.
 

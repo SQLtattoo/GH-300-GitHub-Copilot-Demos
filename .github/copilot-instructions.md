@@ -21,3 +21,13 @@ Budget Buddy is a GH-300 training repository. Treat the codebase as a working de
 - Edge-case bugs in budget calculations.
 - Path traversal gap in JSON file reading.
 - O(n^2) transaction processing logic.
+
+## Change Workflow
+
+- Before editing, identify which repository instructions affect the task.
+- Add or update tests first when practical.
+- Fix the narrowest relevant code path.
+- Run `pytest` after code changes.
+- Update `README.md` when setup, commands, or user-facing behavior changes.
+- Update `CHANGELOG.md` for meaningful user-facing changes.
+- Before committing, summarize changed files, tests run, and remaining risks.

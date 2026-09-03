@@ -39,6 +39,7 @@ Budget Buddy reads sample transactions from [data/sample_transactions.csv](data/
 - savings rate
 - largest expense
 - spending by category
+- top three merchants by total spending
 - a paginated transaction table
 
 ## Main Files

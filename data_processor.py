@@ -6,7 +6,7 @@ validation, and TODOs so GitHub Copilot can improve it during the workshop.
 """
 
 from collections import defaultdict
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set, Tuple
 
 
 Transaction = Dict[str, object]
@@ -38,19 +38,12 @@ class TransactionProcessor:
         """Return expense totals grouped by category."""
         self.processed_count += 1
         totals: Dict[str, float] = defaultdict(float)
-        expenses = self.expenses_only(transactions)
 
-        # PERFORMANCE ISSUE: This nested loop is easy to refactor with one pass.
-        for expense in expenses:
-            category = self.normalize_category(str(expense.get("category", "")))
-            for candidate in expenses:
-                candidate_category = self.normalize_category(str(candidate.get("category", "")))
-                if candidate_category == category:
-                    totals[category] += float(candidate.get("amount", 0))
-            expenses = [
-                item for item in expenses
-                if self.normalize_category(str(item.get("category", ""))) != category
-            ]
+        for transaction in transactions:
+            if transaction.get("type") != "expense":
+                continue
+            category = self.normalize_category(str(transaction.get("category", "")))
+            totals[category] += float(transaction.get("amount", 0))
 
         return dict(totals)
 
@@ -63,17 +56,29 @@ class TransactionProcessor:
 
     def find_duplicate_transactions(self, transactions: List[Transaction]) -> List[Transaction]:
         """Find probable duplicate transactions."""
+        key_counts: Dict[Tuple[object, object, object], int] = defaultdict(int)
+        for transaction in transactions:
+            key = (
+                transaction.get("date"),
+                transaction.get("amount"),
+                transaction.get("merchant"),
+            )
+            key_counts[key] += 1
+
+        duplicate_keys = {key for key, count in key_counts.items() if count > 1}
+        seen_transactions: Set[Tuple[Tuple[str, object], ...]] = set()
         duplicates: List[Transaction] = []
 
-        for index, item in enumerate(transactions):
-            for other_index, other in enumerate(transactions):
-                if index == other_index:
-                    continue
-                same_date = item.get("date") == other.get("date")
-                same_amount = item.get("amount") == other.get("amount")
-                same_merchant = item.get("merchant") == other.get("merchant")
-                if same_date and same_amount and same_merchant and item not in duplicates:
-                    duplicates.append(item)
+        for transaction in transactions:
+            key = (
+                transaction.get("date"),
+                transaction.get("amount"),
+                transaction.get("merchant"),
+            )
+            fingerprint = tuple(sorted(transaction.items()))
+            if key in duplicate_keys and fingerprint not in seen_transactions:
+                duplicates.append(transaction)
+                seen_transactions.add(fingerprint)
 
         return duplicates
 
@@ -92,8 +97,25 @@ class TransactionProcessor:
     # TODO: Create spending_alerts(transactions, category_limits)
     # It should return categories where spending is above the configured limit.
 
-    # TODO: Create summarize_by_merchant(transactions)
-    # It should return total spending by merchant.
+    def summarize_by_merchant(
+        self, transactions: List[Transaction], limit: int = 3
+    ) -> List[Transaction]:
+        """Return the highest expense totals grouped by merchant."""
+        if limit < 1:
+            raise ValueError("limit must be at least 1")
+
+        totals: Dict[str, float] = defaultdict(float)
+        for transaction in transactions:
+            if transaction.get("type") != "expense":
+                continue
+            merchant = str(transaction.get("merchant", "")).strip()
+            totals[merchant] += float(transaction.get("amount", 0))
+
+        ranked_totals = sorted(totals.items(), key=lambda item: (-item[1], item[0]))
+        return [
+            {"merchant": merchant, "total": total}
+            for merchant, total in ranked_totals[:limit]
+        ]
 
     def get_processed_count(self) -> int:
         """Return the number of processing operations performed."""

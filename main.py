@@ -30,6 +30,7 @@ def build_report(monthly_budget: float, transactions: list[dict[str, object]]) -
         "savings_rate": calculator.savings_rate(income, expenses),
         "largest_expense": processor.largest_expense(transactions),
         "category_totals": category_totals,
+        "top_merchants": processor.summarize_by_merchant(transactions),
     }
 
 
@@ -54,6 +55,25 @@ def show_transactions(transactions: list[dict[str, object]]) -> None:
         )
 
 
+def show_top_merchants(top_merchants: list[dict[str, object]]) -> None:
+    """Log the highest-spending merchants as a table."""
+    logger.info("Top merchants")
+    if not top_merchants:
+        logger.info("No expense transactions found.")
+        return
+
+    columns = [
+        ColumnDefinition("merchant", "Merchant"),
+        ColumnDefinition("total", "Total", formatter=format_currency),
+    ]
+    table = DataTable(top_merchants, columns, rows_per_page=3)
+
+    logger.info("Merchant             | Total")
+    logger.info("-" * 33)
+    for item in table.get_current_page():
+        logger.info(f"{item['merchant']:<20} | {format_currency(item['total']):>10}")
+
+
 def main() -> None:
     """Run the Budget Buddy demo app."""
     monthly_budget = 3200.00
@@ -73,6 +93,8 @@ def main() -> None:
     logger.info(f"Savings rate: {report['savings_rate']:.1f}%")
     logger.info(f"Largest expense: {report['largest_expense']}")
     logger.info(f"Category totals: {report['category_totals']}")
+    logger.info("=" * 48)
+    show_top_merchants(report["top_merchants"])
     logger.info("Demo-start app completed. Now use Copilot to harden it.")
 
 
