@@ -35,6 +35,19 @@ def test_build_report_requires_nonzero_income():
         main.build_report(100.0, [{"type": "expense", "amount": 10.0}])
 
 
+def test_build_report_reuses_precomputed_totals(monkeypatch, transactions):
+    def fail_on_rescan(*args, **kwargs):
+        pytest.fail("build_report should derive metrics from precomputed totals")
+
+    monkeypatch.setattr(main.BudgetCalculator, "remaining_budget", fail_on_rescan)
+    monkeypatch.setattr(main.BudgetCalculator, "net_cash_flow", fail_on_rescan)
+
+    report = main.build_report(1000.0, transactions)
+
+    assert report["remaining_budget"] == 800.0
+    assert report["net_cash_flow"] == 4800.0
+
+
 def test_show_transactions_logs_header_and_first_page(monkeypatch):
     messages = []
     monkeypatch.setattr(main.logger, "info", messages.append)

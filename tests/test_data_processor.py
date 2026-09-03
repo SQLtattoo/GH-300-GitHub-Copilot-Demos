@@ -98,6 +98,26 @@ def test_duplicate_detection_handles_missing_key_fields():
     assert processor.find_duplicate_transactions([first, first.copy(), second]) == [first, second]
 
 
+def test_duplicate_detection_handles_unhashable_transaction_values():
+    first = {
+        "date": "2026-06-01",
+        "amount": 10.0,
+        "merchant": "Cafe",
+        "metadata": {"tags": ["team", "lunch"]},
+    }
+    equivalent = {
+        **first,
+        "metadata": {"tags": ["team", "lunch"]},
+    }
+    variant = {
+        **first,
+        "metadata": {"tags": ["client", "lunch"]},
+    }
+    processor = TransactionProcessor()
+
+    assert processor.find_duplicate_transactions([first, equivalent, variant]) == [first, variant]
+
+
 @pytest.mark.parametrize("missing_field", ["date", "merchant", "category", "amount", "type"])
 def test_validation_rejects_each_missing_required_field(missing_field):
     transaction = {

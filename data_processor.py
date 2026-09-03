@@ -12,6 +12,26 @@ from typing import Dict, List, Optional, Set, Tuple
 Transaction = Dict[str, object]
 
 
+def _make_hashable(value: object) -> object:
+    """Convert nested container values into stable hashable equivalents."""
+    if isinstance(value, dict):
+        items = ((key, _make_hashable(item)) for key, item in value.items())
+        return ("dict", tuple(sorted(items, key=lambda item: repr(item[0]))))
+    if isinstance(value, list):
+        return ("list", tuple(_make_hashable(item) for item in value))
+    if isinstance(value, tuple):
+        return ("tuple", tuple(_make_hashable(item) for item in value))
+    if isinstance(value, set):
+        items = (_make_hashable(item) for item in value)
+        return ("set", tuple(sorted(items, key=repr)))
+
+    try:
+        hash(value)
+    except TypeError:
+        return ("object", repr(value))
+    return value
+
+
 class TransactionProcessor:
     """Process, filter, and summarize transaction data."""
 
@@ -75,7 +95,12 @@ class TransactionProcessor:
                 transaction.get("amount"),
                 transaction.get("merchant"),
             )
-            fingerprint = tuple(sorted(transaction.items()))
+            fingerprint = tuple(
+                sorted(
+                    (field, _make_hashable(value))
+                    for field, value in transaction.items()
+                )
+            )
             if key in duplicate_keys and fingerprint not in seen_transactions:
                 duplicates.append(transaction)
                 seen_transactions.add(fingerprint)
