@@ -14,7 +14,6 @@ Budget Buddy is a GH-300 training repository. Treat the codebase as a working de
 - Use `logger` from [logger.py](../logger.py) for app output.
 - Use type hints on public functions.
 - Prefer small, readable functions.
-- Update [CHANGELOG.md](../CHANGELOG.md) for meaningful changes.
 
 ## Demo Issues To Preserve In Starter State
 - Low coverage baseline.
@@ -22,10 +21,3 @@ Budget Buddy is a GH-300 training repository. Treat the codebase as a working de
 - Edge-case bugs in budget calculations.
 - Path traversal gap in JSON file reading.
 - O(n^2) transaction processing logic.
-
-## When Asked To Improve The App
-1. Add or update tests first when practical.
-2. Fix the narrowest relevant code path.
-3. Run `pytest`.
-4. Update docs and changelog when behavior changes.
-5. Summarize the result and remaining risks.

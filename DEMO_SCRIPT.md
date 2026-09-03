@@ -67,47 +67,38 @@ Talking points:
 - Repository instructions are implicit context: Copilot may follow them even when
   the prompt does not repeat every requirement.
 
-### 1a. Repository instructions and unexpected file changes
+### 1a. Minimal repository instructions
 
 Open [.github/copilot-instructions.md](.github/copilot-instructions.md) before the
-first coding demonstration. Point out these rules:
+first coding demonstration. Point out that the starter file contains only stable,
+always-on context and engineering conventions:
 
-- add or update tests first when practical;
-- run `pytest` after changes;
-- update `README.md` when commands or behavior change;
-- update `CHANGELOG.md` for meaningful changes.
+- this is an intentionally immature Python training app;
+- use pytest for tests and the shared logger for app output;
+- use type hints and prefer small, readable functions;
+- preserve intentional demo issues unless the user asks to fix them.
 
 Ask Copilot in **Ask** mode:
 
 ```text
-Read the repository instructions. Which files might you update in addition to the
-file named in my prompt, and why?
+Read the repository instructions. What context and coding conventions will you
+apply while working in this repository?
 ```
 
 Narration:
 
-> "Repository instructions are automatically included as context. If I ask for a
-> feature and Copilot also updates tests or the changelog, it is not inventing
-> unrelated work—it is following our checked-in team rules. Agent mode should
-> still show those files in its plan and diff, and I remain responsible for
-> reviewing every change. If we do not want a behavior, we change the instruction
-> rather than repeatedly correcting Copilot in individual prompts."
+> "Repository instructions are automatically included as context. At this point
+> they are deliberately small: they tell Copilot what this project is and define
+> conventions that should apply to every interaction. We will turn this into a
+> fuller team workflow in Module 5, after we have seen the core Copilot surfaces."
 
-Optionally demonstrate that the file is editable team policy. Add a temporary
-instruction such as:
+Talking points:
 
-```text
-- Before editing, identify which repository instructions affect the requested task.
-```
-
-Ask Copilot to plan a small change and show that it identifies the applicable
-rules. Restore the temporary line afterward so the remaining demonstrations stay
-on the standard script.
-
-> **Why did Copilot touch `CHANGELOG.md`?** The instruction explicitly requires it
-> for meaningful changes. Explain this before Module 2 so later multi-file edits
-> are expected rather than surprising. A file should appear in the final diff only
-> when the rule actually applies.
+- Do not make documentation or changelog edits an early surprise. Modules 2-4
+  should keep a clear requested code → relevant tests → validation story.
+- This is a preview of customization, not the customization lesson itself.
+- The developer remains responsible for reviewing suggestions even when Copilot
+  follows checked-in instructions correctly.
 
 ### 1b. Settings worth showing
 
@@ -431,17 +422,71 @@ pytest
 Goal: show Copilot beyond the editor — Agent Mode, custom instructions, Skills,
 MCP, and the GitHub review workflow.
 
-### 5a. Agent Mode multi-file feature
+### 5a. Expand custom instructions into a team workflow
 
-Use [.github/prompts/agent-feature.prompt.md](.github/prompts/agent-feature.prompt.md):
+Reopen [.github/copilot-instructions.md](.github/copilot-instructions.md). Remind
+the audience that Module 1 introduced a minimal set of always-on conventions.
+Now add the workflow policy below to the end of the file:
 
-```text
-Add CSV export support for transactions. Update file_handler.py, add tests, update README and CHANGELOG, and run pytest.
+```markdown
+## Change Workflow
+
+- Before editing, identify which repository instructions affect the task.
+- Add or update tests first when practical.
+- Fix the narrowest relevant code path.
+- Run `pytest` after code changes.
+- Update `README.md` when setup, commands, or user-facing behavior changes.
+- Update `CHANGELOG.md` for meaningful user-facing changes.
+- Before committing, summarize changed files, tests run, and remaining risks.
 ```
 
-Watch Copilot plan, edit several files, run tests, and report back.
+Narration:
 
-### 5b. Custom instructions and AGENT.md recap
+> "In Module 1 these instructions supplied stable project context. We are now
+> evolving them into checked-in team policy. The next request will mention only
+> the feature; tests, validation, documentation, and release notes should appear
+> because of these rules rather than because I repeat them in every prompt."
+
+Ask Copilot in **Ask** or **Plan** mode:
+
+```text
+Which repository instructions will affect the next feature change, and which
+additional files might those instructions require you to update?
+```
+
+Review the answer before starting the agent task. This makes the expected
+multi-file scope explicit without giving away the implementation.
+
+### 5b. Agent Mode multi-file feature
+
+Switch to **Agent** mode and enter a deliberately minimal request directly in
+Chat. Do not invoke `/agent-feature` for this demonstration because that saved
+prompt explicitly includes tests, docs, changelog, and validation steps; here we
+want the repository instructions to be the only source of those requirements.
+
+```text
+Add CSV export support for transactions.
+```
+
+Watch Copilot plan, edit several files, run tests, and report back. When reviewing
+the diff, connect each additional file to the workflow rule that caused it:
+
+| Observed change | Instruction behind it |
+| --- | --- |
+| Tests added or updated | Add or update tests first when practical. |
+| `pytest` executed | Run `pytest` after code changes. |
+| `README.md` updated | Document changed commands or user-facing behavior. |
+| `CHANGELOG.md` updated | Record meaningful user-facing changes. |
+| Final summary | Report files, tests, and remaining risks before committing. |
+
+Narration:
+
+> "The agent did not independently decide that every feature needs release notes.
+> We changed the repository's operating policy, and the agent followed it. If
+> these changes are not what the team wants, we improve the checked-in policy
+> instead of correcting every future prompt."
+
+### 5c. AGENT.md and Skills
 
 Open [AGENT.md](AGENT.md) and [.github/copilot-instructions.md](.github/copilot-instructions.md).
 
@@ -451,10 +496,10 @@ Narration:
 > sets repo-wide rules, and `AGENT.md` gives an agent its operating manual for this
 > repo — build and test commands, conventions, and guardrails. Because these live
 > in the repo, every teammate and every Copilot session follows the same playbook.
-> We introduced the always-on instructions in Module 1; now we are combining them
-> with Agent mode and more specialized guidance."
+> We introduced minimal always-on instructions in Module 1, expanded them into a
+> workflow in Module 5a, and have now seen Agent mode apply that workflow."
 
-### 5c. Skills (SKILL.md)
+#### Skills (SKILL.md)
 
 Open [.github/skills/add-budget-report-section/SKILL.md](.github/skills/add-budget-report-section/SKILL.md)
 and show its structure.
@@ -553,8 +598,9 @@ Talking points:
 - **`/` (slash):** the fastest shortcuts. Built-ins like `/explain`, `/tests`,
   `/fix`, `/doc`, and `/new` are just one-word versions of common requests.
   Because this repo enables `chat.promptFiles`, every `.prompt.md` in
-  [.github/prompts](.github/prompts) *also* appears here — so `/agent-feature`
-  loads the saved Module 5a prompt instead of pasting text by hand.
+  [.github/prompts](.github/prompts) *also* appears here. `/agent-feature` is the
+  reusable, explicit-workflow alternative to the minimal request used in Module
+  5b; it packages code, tests, docs, changelog, and validation into one command.
 - **`@` (participants):** decide who handles the question. `@workspace` reasons
   over the whole repo, `@terminal` specializes in shell commands (see 2c), and
   `@vscode` answers editor/settings questions.
