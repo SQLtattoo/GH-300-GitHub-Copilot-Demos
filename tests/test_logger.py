@@ -29,3 +29,16 @@ def test_file_logs_keep_diagnostic_context(tmp_path):
 
     assert formatter is not None
     assert formatter._fmt == "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+
+def test_file_logger_creates_parent_directory_and_writes_utf8(tmp_path):
+    """Create missing log directories and persist Unicode messages."""
+    log_path = tmp_path / "nested" / "budget-buddy.log"
+    configured_logger = setup_logger("test_nested_log", log_file=str(log_path))
+
+    configured_logger.info("Cafe total: 12.50 EUR")
+    for handler in configured_logger.handlers:
+        handler.flush()
+
+    assert log_path.exists()
+    assert "Cafe total: 12.50 EUR" in log_path.read_text(encoding="utf-8")

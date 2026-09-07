@@ -1,16 +1,15 @@
 # Budget Buddy - GitHub Copilot Demo Lab
 
-Budget Buddy is a small Python budget tracker designed for Microsoft GH-300 demonstrations. It is intentionally a **working but immature** app: the happy path runs, starter tests pass, coverage is low, and realistic TODOs, bugs, security issues, and performance problems are left for GitHub Copilot to improve.
+Budget Buddy is a small Python budget tracker designed for Microsoft GH-300 demonstrations. The current tree is the completed reference state, with defensive validation, the workshop features implemented, and a 90% coverage gate.
 
 The goal is to show Copilot as more than autocomplete: codebase explanation, inline edits, agent mode, test generation, debugging, security review, refactoring, documentation, and PR-style summaries.
 
 ## Current Demo State
 
 - Runnable app: `python main.py`
-- Starter tests: 8 tests
-- Current coverage target: about 30%
-- Workshop goal: use Copilot to reach 90%+ coverage
-- Intentional issues: documented in [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md)
+- Comprehensive pytest suite
+- Current coverage gate: 90%
+- Resolved starter issues: documented in [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md)
 - Trainer flow: documented in [DEMO_SCRIPT.md](DEMO_SCRIPT.md)
 
 ## Quick Start
@@ -30,7 +29,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 ## What The App Does
 
-Budget Buddy reads sample transactions from [data/sample_transactions.csv](data/sample_transactions.csv), builds a simple monthly budget report, and logs:
+Budget Buddy reads sample transactions from [data/sample_transactions.csv](data/sample_transactions.csv), exports them to `data/exported_transactions.csv`, builds a simple monthly budget report, and logs:
 
 - income
 - expenses
@@ -39,19 +38,21 @@ Budget Buddy reads sample transactions from [data/sample_transactions.csv](data/
 - savings rate
 - largest expense
 - spending by category
+- top three merchants by total spending
 - a paginated transaction table
+- the CSV export destination
 
 ## Main Files
 
 | File | Purpose |
 | --- | --- |
 | [main.py](main.py) | Runnable demo app and report orchestration |
-| [calculator.py](calculator.py) | Budget calculations with intentional edge-case bugs |
-| [data_processor.py](data_processor.py) | Transaction filtering, grouping, duplicate detection, and TODOs |
-| [file_handler.py](file_handler.py) | CSV/JSON file I/O with an intentional path traversal gap |
+| [calculator.py](calculator.py) | Budget calculations with guarded edge cases |
+| [data_processor.py](data_processor.py) | Validated transaction filtering, grouping, sorting, and summaries |
+| [file_handler.py](file_handler.py) | Confined and validated CSV/JSON file I/O |
 | [data_table.py](data_table.py) | Generic table helper used by the app |
 | [logger.py](logger.py) | Centralized logging utility |
-| [tests](tests) | Sparse starter tests for the coverage journey |
+| [tests](tests) | Focused tests enforcing the 90% coverage gate |
 
 ## Demo Flow (GH-300 modules)
 
@@ -91,8 +92,8 @@ pytest
 pytest --cov=. --cov-report=term-missing
 ```
 
-During the demo, after Copilot generates enough tests and fixes, change the coverage threshold in [pytest.ini](pytest.ini) from `30` to `90` and rerun `pytest`.
+The current reference state already enforces 90%. Use [reset_for_demo.ps1](reset_for_demo.ps1) before presenting the starter-to-completed coverage journey.
 
 ## Trainer Notes
 
-This repository is intentionally not production-ready. Do not remove the TODOs and bugs from the starter state unless you also update [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md) and [DEMO_SCRIPT.md](DEMO_SCRIPT.md).
+Use [reset_for_demo.ps1](reset_for_demo.ps1) to restore the intentionally incomplete workshop state. The current completed state remains a training application rather than a production financial system.

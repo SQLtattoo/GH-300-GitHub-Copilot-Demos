@@ -23,6 +23,8 @@ python main.py                   # run the app
 pytest                           # run tests with coverage gate
 pytest --cov=. --cov-report=term-missing
 ```
+## CRITICAL expectations
+- NEVER merge to main branch unless explicitly asked.
 
 The coverage gate lives in [pytest.ini](pytest.ini). It starts at 30 and is
 raised to 90 during the unit-test demo.
@@ -48,3 +50,4 @@ raised to 90 during the unit-test demo.
 - Repo-wide rules: [.github/copilot-instructions.md](.github/copilot-instructions.md)
 - Reusable prompts: [.github/prompts](.github/prompts)
 - Task playbooks (Skills): [.github/skills](.github/skills)
+- Always add comments to the code generated

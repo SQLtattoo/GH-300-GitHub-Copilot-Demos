@@ -30,6 +30,7 @@ def build_report(monthly_budget: float, transactions: list[dict[str, object]]) -
         "savings_rate": calculator.savings_rate(income, expenses),
         "largest_expense": processor.largest_expense(transactions),
         "category_totals": category_totals,
+        "top_merchants": processor.top_merchants(transactions),
     }
 
 
@@ -59,6 +60,8 @@ def main() -> None:
     monthly_budget = 3200.00
     handler = BudgetFileHandler("data")
     transactions = handler.read_transactions_csv("sample_transactions.csv")
+    export_filename = "exported_transactions.csv"
+    handler.write_transactions_csv(export_filename, transactions)
     report = build_report(monthly_budget, transactions)
 
     logger.info("Budget Buddy - GitHub Copilot Demo App")
@@ -73,7 +76,11 @@ def main() -> None:
     logger.info(f"Savings rate: {report['savings_rate']:.1f}%")
     logger.info(f"Largest expense: {report['largest_expense']}")
     logger.info(f"Category totals: {report['category_totals']}")
-    logger.info("Demo-start app completed. Now use Copilot to harden it.")
+    logger.info("Top merchants:")
+    for rank, (merchant, total) in enumerate(report["top_merchants"], start=1):
+        logger.info(f"  {rank}. {merchant}: {format_currency(total)}")
+    logger.info(f"Transactions exported to data/{export_filename}")
+    logger.info("Budget Buddy report completed.")
 
 
 if __name__ == "__main__":
