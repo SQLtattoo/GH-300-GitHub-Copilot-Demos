@@ -260,11 +260,10 @@ Open [calculator.py](calculator.py), select `savings_rate()`, and use Inline Cha
 Explain what this method does and what happens when income is zero.
 ```
 
-This naturally surfaces a real bug to revisit in Module 4.
+In the starter state, this surfaces a real bug to revisit in Module 4. The current completed state returns `0.0` when income is zero; use `reset_for_demo.ps1` before presenting this step.
 
-> Presenter note: the code no longer carries `# BUG` spoiler comments. The
-> zero-income bug is documented in
-> [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md#L11) (Savings rate row).
+> Presenter note: the resolved zero-income bug is recorded in
+> [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md).
 
 ### 2c. Copilot in the terminal
 
@@ -311,8 +310,8 @@ Talking points:
 
 ### 2d. Prompts and providing context (security example)
 
-The course shows a "review this banking app for security" prompt. The Budget
-Buddy equivalent is the path-traversal gap in file handling. Use
+The course shows a "review this banking app for security" prompt. In the starter
+state, the Budget Buddy equivalent is the path-traversal gap in file handling. Use
 [.github/prompts/security-review.prompt.md](.github/prompts/security-review.prompt.md):
 
 ```text
@@ -323,8 +322,8 @@ plain the risk before changing code.
 Emphasize how a focused prompt plus repo context produces a better answer than a
 vague one.
 
-> Presenter note: the path-traversal gap is in `read_transactions_json`, logged
-> in [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md#L13) (Security row).
+> Presenter note: the current completed state confines all file operations. The
+> resolved starter gap is recorded in [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md).
 
 ---
 
@@ -335,8 +334,8 @@ DevOps beat.
 
 ### 3a. Generate code from a TODO
 
-Open [calculator.py](calculator.py) and implement `forecast_month_end_spend()` or
-`is_over_budget()` from the TODO stubs.
+After restoring the starter state, open [calculator.py](calculator.py) and implement
+`forecast_month_end_spend()` or `is_over_budget()` from the TODO stubs.
 
 ### 3b. Transform / refactor
 
@@ -352,8 +351,8 @@ Use [.github/prompts/refactor-performance.prompt.md](.github/prompts/refactor-pe
 Refactor duplicate detection in data_processor.py to avoid O(n^2) behavior while preserving output.
 ```
 
-> Presenter note: the O(n^2) hotspot is in `find_duplicate_transactions`,
-> tracked in [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md#L21) (Performance row).
+> Presenter note: the starter implementation uses an O(n^2) hotspot in
+> `find_duplicate_transactions`; the completed refactor uses tuple keys and sets.
 
 ### 3d. Document and explain
 
@@ -364,11 +363,14 @@ Add concise docstrings and type hints to the public methods in calculator.py.
 ### 3e. DevOps snippets
 
 Use [.github/prompts/devops-snippet.prompt.md](.github/prompts/devops-snippet.prompt.md).
-The repo ships a `Dockerfile` and a CI workflow with intentional TODOs:
+The starter state ships a `Dockerfile` and a CI workflow with intentional TODOs:
 
 ```text
 Complete the Dockerfile to run Budget Buddy, then finish the GitHub Actions workflow to install deps and run pytest.
 ```
+
+> Presenter note: the completed assets use Python 3.13, install
+> `requirements-test.txt`, run the app in the container, and run pytest in CI.
 
 ---
 
@@ -394,11 +396,8 @@ Generate focused pytest tests for BudgetCalculator edge cases, including empty t
 
 You can also use `@workspace /tests` on a selected function.
 
-> Presenter note: the calculator edge-case bugs (empty expenses, category
-> percentage, savings rate) are listed in
-> [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md#L9) (rows 9-11). Input
-> validation lives at
-> [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md#L12).
+> Presenter note: the calculator edge-case and input-validation fixes in the
+> completed state are recorded in [INTENTIONAL_ISSUES.md](INTENTIONAL_ISSUES.md).
 
 ### 4c. Run, verify, and fix (red-green loop)
 

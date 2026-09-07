@@ -2,6 +2,8 @@
 
 Budget Buddy is a demo-start application. The intended transformation is from a low-coverage, happy-path budget tracker into a more robust app using GitHub Copilot.
 
+The current tree has reached the target state below. Run [reset_for_demo.ps1](reset_for_demo.ps1) to restore the starter state for workshop delivery.
+
 ## Starter State
 
 - App runs successfully from [main.py](main.py).

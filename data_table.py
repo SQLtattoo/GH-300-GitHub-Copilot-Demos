@@ -77,9 +77,9 @@ class DataTable(Generic[T]):
         if rows_per_page < 1:
             raise ValueError("rows_per_page must be at least 1")
         
-        self._original_data = data
-        self._filtered_data = data
-        self._columns = columns
+        self._original_data = list(data)
+        self._filtered_data = list(data)
+        self._columns = list(columns)
         self._rows_per_page = rows_per_page
         self._current_page = 1
         self._sort_column: Optional[str] = None
@@ -117,7 +117,7 @@ class DataTable(Generic[T]):
         self._search_query = query.lower().strip()
         
         if not self._search_query:
-            self._filtered_data = self._original_data
+            self._filtered_data = list(self._original_data)
         else:
             self._filtered_data = []
             for item in self._original_data:
@@ -127,6 +127,13 @@ class DataTable(Generic[T]):
                     if value is not None and self._search_query in str(value).lower():
                         self._filtered_data.append(item)
                         break
+
+        if self._sort_column:
+            self._filtered_data = sort_data(
+                self._filtered_data,
+                self._sort_column,
+                self._sort_ascending,
+            )
         
         self._current_page = 1
     
@@ -152,11 +159,7 @@ class DataTable(Generic[T]):
         self._sort_ascending = ascending
         
         # Sort the filtered data
-        self._filtered_data = sorted(
-            self._filtered_data,
-            key=lambda item: self._get_value(item, column_key) or "",
-            reverse=not ascending
-        )
+        self._filtered_data = sort_data(self._filtered_data, column_key, ascending)
         
         self._current_page = 1
     
@@ -268,7 +271,7 @@ class DataTable(Generic[T]):
         Returns:
             List[ColumnDefinition]: List of column definitions
         """
-        return self._columns
+        return self._columns.copy()
     
     def get_sort_state(self) -> Dict[str, Any]:
         """
@@ -297,7 +300,7 @@ class DataTable(Generic[T]):
         
         Clears search, sorting, and resets to page 1.
         """
-        self._filtered_data = self._original_data
+        self._filtered_data = list(self._original_data)
         self._current_page = 1
         self._sort_column = None
         self._sort_ascending = True
@@ -331,7 +334,7 @@ def apply_search(data: List[T], columns: List[ColumnDefinition], query: str) -> 
     query = query.lower().strip()
     
     if not query:
-        return data
+        return list(data)
     
     filtered = []
     for item in data:
@@ -367,11 +370,13 @@ def sort_data(
         >>> sort_data(data, 'age', ascending=True)
         [{'age': 25}, {'age': 30}]
     """
+    populated = [item for item in data if _get_item_value(item, column_key) is not None]
+    missing = [item for item in data if _get_item_value(item, column_key) is None]
     return sorted(
-        data,
-        key=lambda item: _get_item_value(item, column_key) or "",
-        reverse=not ascending
-    )
+        populated,
+        key=lambda item: _sortable_value(_get_item_value(item, column_key)),
+        reverse=not ascending,
+    ) + missing
 
 
 def get_paginated_data(
@@ -454,6 +459,9 @@ def process_table_data(
         >>> result['rows']
         [{'name': 'Alice', 'age': 30}, {'name': 'Bob', 'age': 25}]
     """
+    if rows_per_page < 1:
+        raise ValueError("rows_per_page must be at least 1")
+
     # Apply search filter
     filtered_data = data
     if search_query:
@@ -461,6 +469,11 @@ def process_table_data(
     
     # Apply sorting
     if sort_column:
+        column = next((item for item in columns if item.key == sort_column), None)
+        if not column:
+            raise ValueError(f"Column '{sort_column}' not found")
+        if not column.sortable:
+            raise ValueError(f"Column '{sort_column}' is not sortable")
         filtered_data = sort_data(filtered_data, sort_column, sort_ascending)
     
     # Calculate pagination metadata
@@ -509,3 +522,10 @@ def _get_item_value(item: T, key: str) -> Any:
         return item.get(key)
     else:
         return getattr(item, key, None)
+
+
+def _sortable_value(value: Any) -> tuple[int, Any]:
+    """Return a type-stable key that preserves numeric ordering."""
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return (0, float(value))
+    return (1, str(value).casefold())

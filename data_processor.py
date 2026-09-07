@@ -1,12 +1,11 @@
 """
 Transaction processing helpers for the Budget Buddy demo app.
 
-This starter module intentionally includes inefficient logic, permissive
-validation, and TODOs so GitHub Copilot can improve it during the workshop.
+This module provides validated, single-pass transaction processing helpers.
 """
 
 from collections import defaultdict
-from typing import Dict, List, Optional
+from typing import Dict, FrozenSet, List, Optional, Tuple
 
 
 Transaction = Dict[str, object]
@@ -38,19 +37,9 @@ class TransactionProcessor:
         """Return expense totals grouped by category."""
         self.processed_count += 1
         totals: Dict[str, float] = defaultdict(float)
-        expenses = self.expenses_only(transactions)
-
-        # PERFORMANCE ISSUE: This nested loop is easy to refactor with one pass.
-        for expense in expenses:
+        for expense in self.expenses_only(transactions):
             category = self.normalize_category(str(expense.get("category", "")))
-            for candidate in expenses:
-                candidate_category = self.normalize_category(str(candidate.get("category", "")))
-                if candidate_category == category:
-                    totals[category] += float(candidate.get("amount", 0))
-            expenses = [
-                item for item in expenses
-                if self.normalize_category(str(item.get("category", ""))) != category
-            ]
+            totals[category] += float(expense.get("amount", 0))
 
         return dict(totals)
 
@@ -63,37 +52,105 @@ class TransactionProcessor:
 
     def find_duplicate_transactions(self, transactions: List[Transaction]) -> List[Transaction]:
         """Find probable duplicate transactions."""
-        duplicates: List[Transaction] = []
+        key_counts: Dict[Tuple[object, object, object], int] = defaultdict(int)
+        for item in transactions:
+            key = (item.get("date"), item.get("amount"), item.get("merchant"))
+            key_counts[key] += 1
 
-        for index, item in enumerate(transactions):
-            for other_index, other in enumerate(transactions):
-                if index == other_index:
-                    continue
-                same_date = item.get("date") == other.get("date")
-                same_amount = item.get("amount") == other.get("amount")
-                same_merchant = item.get("merchant") == other.get("merchant")
-                if same_date and same_amount and same_merchant and item not in duplicates:
-                    duplicates.append(item)
+        duplicates: List[Transaction] = []
+        emitted: set[FrozenSet[Tuple[str, object]]] = set()
+        for item in transactions:
+            key = (item.get("date"), item.get("amount"), item.get("merchant"))
+            marker = frozenset(item.items())
+            if key_counts[key] > 1 and marker not in emitted:
+                duplicates.append(item)
+                emitted.add(marker)
 
         return duplicates
 
     def validate_transaction(self, transaction: Transaction) -> bool:
-        """Return True when a transaction has the required fields."""
+        """Return True when a transaction has valid required fields."""
         required_fields = ["date", "merchant", "category", "amount", "type"]
-        for field in required_fields:
-            if field not in transaction:
-                return False
+        if any(field not in transaction for field in required_fields):
+            return False
+        if any(not str(transaction[field]).strip() for field in ["date", "merchant", "category"]):
+            return False
+        if transaction["type"] not in {"income", "expense"}:
+            return False
+        if isinstance(transaction["amount"], bool):
+            return False
 
-        return True
+        try:
+            amount = float(transaction["amount"])
+        except (TypeError, ValueError):
+            return False
 
-    # TODO: Create sort_transactions(transactions, field, descending=False)
-    # It should sort by date, merchant, category, or amount and reject unknown fields.
+        return amount >= 0
 
-    # TODO: Create spending_alerts(transactions, category_limits)
-    # It should return categories where spending is above the configured limit.
+    def sort_transactions(
+        self,
+        transactions: List[Transaction],
+        field: str,
+        descending: bool = False,
+    ) -> List[Transaction]:
+        """Return transactions sorted by a supported field."""
+        supported_fields = {"date", "merchant", "category", "amount"}
+        if field not in supported_fields:
+            raise ValueError(f"Unsupported sort field: {field}")
 
-    # TODO: Create summarize_by_merchant(transactions)
-    # It should return total spending by merchant.
+        self.processed_count += 1
+        if field == "amount":
+            key = lambda item: float(item.get(field, 0))
+        else:
+            key = lambda item: str(item.get(field, "")).casefold()
+        return sorted(transactions, key=key, reverse=descending)
+
+    def spending_alerts(
+        self,
+        transactions: List[Transaction],
+        category_limits: Dict[str, float],
+    ) -> Dict[str, float]:
+        """Return category totals that exceed configured spending limits."""
+        normalized_limits = {
+            self.normalize_category(category): float(limit)
+            for category, limit in category_limits.items()
+        }
+        if any(limit < 0 for limit in normalized_limits.values()):
+            raise ValueError("Category limits must be non-negative")
+
+        self.processed_count += 1
+        totals = self.group_expenses_by_category(transactions)
+        return {
+            category: total
+            for category, total in totals.items()
+            if category in normalized_limits and total > normalized_limits[category]
+        }
+
+    def summarize_by_merchant(self, transactions: List[Transaction]) -> Dict[str, float]:
+        """Return expense totals grouped by merchant."""
+        self.processed_count += 1
+        totals: Dict[str, float] = defaultdict(float)
+        for transaction in self.expenses_only(transactions):
+            merchant = str(transaction.get("merchant", "")).strip()
+            totals[merchant] += float(transaction.get("amount", 0))
+        return dict(totals)
+
+    def top_merchants(
+        self,
+        transactions: List[Transaction],
+        limit: int = 3,
+    ) -> List[Tuple[str, float]]:
+        """Return the highest-spend merchants, ranked by expense total."""
+        if limit <= 0:
+            return []
+
+        merchant_totals = self.summarize_by_merchant(transactions)
+        # Merchant name provides deterministic ordering when totals are tied.
+        ranked_merchants = sorted(
+            merchant_totals.items(),
+            key=lambda item: (-item[1], item[0].casefold()),
+        )
+        return ranked_merchants[:limit]
 
     def get_processed_count(self) -> int:
         """Return the number of processing operations performed."""
